@@ -128,6 +128,18 @@ describe("D1Store", () => {
     expect(left.results).toEqual([{ booking_id: "keep" }]);
   });
 
+  it("supports the `npm run bookings:recent` query", async () => {
+    const pkg = JSON.parse(readFileSync(fileURLToPath(new URL("../../package.json", import.meta.url)), "utf8"));
+    const sql = /--command "(.+)"$/.exec(pkg.scripts["bookings:recent"])?.[1];
+    expect(sql).toBeTruthy();
+    await store.insertBooking(booking("older", { createdAt: "2026-11-16T00:00:00.000Z" }));
+    await store.insertBooking(booking("newer"));
+    await store.upsertNotification(note("newer", { status: "sent", lastError: null }));
+    const { results } = await db.prepare(sql!).all();
+    expect(results.map((r) => r.id)).toEqual(["newer", "older"]);
+    expect(results[0]).toMatchObject({ notifications: "owner_alert:sent" });
+  });
+
   it("pings", async () => {
     await expect(store.ping()).resolves.toBeUndefined();
   });
