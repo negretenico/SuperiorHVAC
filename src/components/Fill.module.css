@@ -1,0 +1,11 @@
+/* dev-only marker for a missing config value; never rendered in production builds */
+.todo {
+  display: inline-block;
+  margin-block: 4px;
+  padding: 2px 8px;
+  font: 600 0.75rem/1.4 var(--font-body);
+  color: #5c1d00;
+  background: #ffe08a;
+  border: 1px dashed #5c1d00;
+  border-radius: var(--radius);
+}

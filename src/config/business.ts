@@ -150,11 +150,32 @@ export const business: Business = {
     },
   ],
   serviceAreas: [
-    // Descriptions are drafted by the pages agent; each must be unique and specific.
-    { slug: "norwalk-oh", name: "Norwalk" },
-    { slug: "sandusky-oh", name: "Sandusky" },
-    { slug: "huron-oh", name: "Huron" },
-    { slug: "willard-oh", name: "Willard" },
+    // Each description must be unique, specific, and only state verifiable facts.
+    // Remove a description to drop that town's /areas/ page (it stays in the footer and JSON-LD).
+    {
+      slug: "norwalk-oh",
+      name: "Norwalk",
+      description:
+        "Norwalk is home. It's the Huron County seat and where we're based, so most of our calls are close by. If your furnace or AC is acting up in town, we're not far.",
+    },
+    {
+      slug: "sandusky-oh",
+      name: "Sandusky",
+      description:
+        "Sandusky sits on Sandusky Bay along Lake Erie, and it's the Erie County seat. Lake weather means long heating seasons and muggy summers. We work on furnaces and AC across town.",
+    },
+    {
+      slug: "huron-oh",
+      name: "Huron",
+      description:
+        "Huron is in Erie County, where the Huron River meets Lake Erie. Lakefront homes get the full winter wind and a damp summer. We fix and install heating and cooling all over town.",
+    },
+    {
+      slug: "willard-oh",
+      name: "Willard",
+      description:
+        "Willard is in southern Huron County, a short drive down from our home base in Norwalk. Out in the farm country, a furnace that quits is a real problem. Call us and we'll come out.",
+    },
   ],
   testimonials: [],
   socials: {
