@@ -1,0 +1,9 @@
+# Minimal config for worker/store/d1.test.ts: a throwaway local D1 via wrangler's getPlatformProxy.
+# Not used for dev or deploy (see ../../wrangler.toml).
+name = "superior-hvac-d1-test"
+compatibility_date = "2026-11-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "superior-hvac-test"
+database_id = "00000000-0000-0000-0000-000000000001"
