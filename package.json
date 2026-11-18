@@ -11,6 +11,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:e2e:install": "playwright install chromium webkit",
+    "e2e:prepare": "node --experimental-strip-types --no-warnings e2e/prepare.mts",
+    "lighthouse": "lhci autorun",
     "db:init": "npm run db:init:local && npm run db:init:remote",
     "db:init:local": "wrangler d1 migrations apply superior-hvac --local",
     "db:init:remote": "wrangler d1 migrations apply superior-hvac --remote",
@@ -27,6 +30,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
     "@cloudflare/workers-types": "^5.20261118.1",
+    "@lhci/cli": "0.16.1",
     "@playwright/test": "^1.65.1",
     "@types/node": "^22",
     "@types/react": "^19",
