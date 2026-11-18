@@ -1,3 +1,116 @@
-/* Design tokens land here once a direction is chosen (agent B). */
-:root { color-scheme: light dark; }
-body { margin: 0; font-family: system-ui, sans-serif; }
+/* ============================================================
+   DESIGN TOKENS · "Thermostat" (source: design/prototypes/thermostat/index.html v3)
+   Layout concept: one vertical temperature scale. The page runs warm (top) to cool (bottom);
+   --t (0 = ember, 1 = ice) follows scroll and every live accent is mixed from it.
+   Fonts: next/font sets --font-fraunces and --font-inter-tight on <html> (root layout).
+   ============================================================ */
+@property --t { syntax: "<number>"; inherits: true; initial-value: 0.5; }
+
+:root {
+  /* ground: cool grey-green stone, so both ember and ice read */
+  --bg: #E8ECE9;
+  --bg-2: #DEE4E0;
+  --surface: #F3F5F2;
+  --fg: #17201E;
+  --fg-2: #4A5652;
+  --line: #C3CBC7;
+  --line-strong: #8E9994;
+  /* the spectrum */
+  --ember: #A3461F;
+  --ice: #2C6B66;
+  --ember-tint: #EBD6C9;
+  --ice-tint: #CFE3DE;
+  --on-accent: #FFFFFF;
+  --glow: 0;               /* 0 in light, >0 in dark: how much ember/ice bloom */
+  --focus: #17201E;
+
+  /* type */
+  --font-display: var(--font-fraunces), "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-body: var(--font-inter-tight), "Inter Tight", "Inter", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  --step--1: 0.8125rem;
+  --step-0: 1rem;
+  --step-1: 1.1875rem;
+  --step-2: clamp(1.5rem, 1.2rem + 1.4vw, 2rem);
+  --step-3: clamp(2.1rem, 1.5rem + 3vw, 3.25rem);
+  --step-4: clamp(2.5rem, 1.6rem + 5vw, 4.75rem);
+  --readout: clamp(5.5rem, 3rem + 14vw, 8.5rem);
+
+  /* shape + space */
+  --radius: 3px;
+  --measure: 34rem;
+  --wrap: 1180px;
+  --bar-h: 72px;
+
+  /* live, scroll-driven accent (derived; do not edit) */
+  --accent: color-mix(in oklch, var(--ember) calc((1 - var(--t)) * 100%), var(--ice));
+  --accent-soft: color-mix(in oklch, var(--accent) 14%, transparent);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1514;
+    --bg-2: #131C1A;
+    --surface: #18221F;
+    --fg: #E4EBE7;
+    --fg-2: #A3B1AB;
+    --line: #26322F;
+    --line-strong: #4A5853;
+    --ember: #F2925F;
+    --ice: #7DD5C6;
+    --ember-tint: #2E1C15;
+    --ice-tint: #12302B;
+    --on-accent: #0E1514;
+    --glow: 1;
+    --focus: #E4EBE7;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1514;
+  --bg-2: #131C1A;
+  --surface: #18221F;
+  --fg: #E4EBE7;
+  --fg-2: #A3B1AB;
+  --line: #26322F;
+  --line-strong: #4A5853;
+  --ember: #F2925F;
+  --ice: #7DD5C6;
+  --ember-tint: #2E1C15;
+  --ice-tint: #12302B;
+  --on-accent: #0E1514;
+  --glow: 1;
+  --focus: #E4EBE7;
+  color-scheme: dark;
+}
+
+/* the one orchestrated moment: warm to cool on scroll (CSS only; static midpoint without support) */
+@keyframes temperature { from { --t: 0; } to { --t: 1; } }
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    :root {
+      animation-name: temperature;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-duration: auto;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --t: 0.5 !important; animation: none !important; }
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: var(--radius); }
+.num { font-variant-numeric: tabular-nums lining-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
