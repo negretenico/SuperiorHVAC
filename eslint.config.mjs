@@ -10,5 +10,5 @@ export default defineConfig([
       "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
     },
   },
-  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", "design/**", ".wrangler/**", "playwright-report/**", "test-results/**"]),
+  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", "design/**", ".wrangler/**", ".claude/**", ".lighthouseci/**", "playwright-report/**", "test-results/**"]),
 ]);
