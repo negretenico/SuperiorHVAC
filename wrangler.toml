@@ -1,0 +1,36 @@
+# Cloudflare Worker: serves the Next.js static export (./out) and handles /api/*.
+name = "superior-hvac"
+main = "worker/index.ts"
+compatibility_date = "2026-11-01"
+
+[assets]
+directory = "./out"
+binding = "ASSETS"
+not_found_handling = "404-page"
+html_handling = "auto-trailing-slash"
+run_worker_first = ["/api/*"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "superior-hvac"
+# Replace after `npx wrangler d1 create superior-hvac` (see README launch checklist).
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "db/migrations"
+
+# Native Workers rate limiter. Periods are 10 or 60 seconds only.
+[[ratelimits]]
+name = "BOOKING_RATE_LIMITER"
+namespace_id = "1001"
+  [ratelimits.simple]
+  limit = 3
+  period = 60
+
+# Retry failed notifications + purge old bookings.
+[triggers]
+crons = ["*/15 * * * *"]
+
+[observability]
+enabled = true
+
+[vars]
+NOTIFIER = "resend"

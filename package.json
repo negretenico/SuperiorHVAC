@@ -1,0 +1,42 @@
+{
+  "name": "superior-hvac",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "preview": "npm run build && wrangler dev",
+    "typecheck": "next typegen && tsc --noEmit && tsc --noEmit -p worker",
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "db:init": "npm run db:init:local && npm run db:init:remote",
+    "db:init:local": "wrangler d1 migrations apply superior-hvac --local",
+    "db:init:remote": "wrangler d1 migrations apply superior-hvac --remote",
+    "check:launch": "node --experimental-strip-types --no-warnings scripts/check-launch.mts",
+    "verify": "npm run typecheck && npm run lint && npm test && npm run build",
+    "deploy": "npm run check:launch && npm run verify && wrangler deploy"
+  },
+  "dependencies": {
+    "next": "16.4.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@cloudflare/workers-types": "^5.20261118.1",
+    "@playwright/test": "^1.65.1",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.6",
+    "typescript": "^5",
+    "vitest": "^5.1.0",
+    "wrangler": "^4.164.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

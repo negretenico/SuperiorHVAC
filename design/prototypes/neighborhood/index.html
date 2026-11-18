@@ -1,0 +1,920 @@
+<title>Superior HVAC · Neighborhood</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* ==========================================================================
+   DESIGN TOKENS: Superior HVAC, Direction C "Neighborhood Editorial"
+   Layout concept: a community bulletin board. Huge condensed type on paper and
+   pine blocks; yellow stickers and name tags carry the human bits.
+   ========================================================================== */
+:root {
+  /* color, light */
+  --bg: #F3F7F2;            /* green-tinted paper */
+  --surface: #FFFFFF;       /* name tags, form panel */
+  --fg: #0F2A1E;            /* pine ink */
+  --muted: #475A4F;
+  --rule: #0F2A1E;          /* thick editorial rules */
+  --pine: #154330;          /* section ground */
+  --on-pine: #F3F7F2;
+  --on-pine-muted: #B8CDBF;
+  --pine-rule: #3B6B54;
+  --yellow: #FFC61A;        /* sticker / school-bus yellow */
+  --on-yellow: #0F2A1E;
+  --num-accent: #154330;    /* last line of the big phone number */
+  --shadow-ink: #0F2A1E;    /* hard sticker shadows */
+  --focus: #0F2A1E;
+  --tab-bg: #0F2A1E;
+  --tab-fg: #F3F7F2;
+
+  /* type */
+  --font-display: "Bricolage Grotesque", "Arial Narrow", "Roboto Condensed", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Bricolage Grotesque", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --wdth-display: 75;       /* Bricolage width axis for display */
+  --step--1: 0.875rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.25rem;
+  --step-2: clamp(1.35rem, 5vw, 2rem);
+  --step-3: clamp(2.6rem, 12vw, 6rem);
+  --step-hero: min(60vw, 30rem);
+
+  /* layout */
+  --max: 1280px;
+  --radius: 6px;
+  --section-pad: clamp(3.5rem, 11vw, 7.5rem);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0B1A13;
+    --surface: #11261B;
+    --fg: #E7F0E9;
+    --muted: #A2B8AA;
+    --rule: #DCE8DF;
+    --pine: #143525;
+    --on-pine: #E7F0E9;
+    --on-pine-muted: #A8C3B2;
+    --pine-rule: #2F5A45;
+    --yellow: #FFCB2E;
+    --on-yellow: #0B1A13;
+    --num-accent: #FFCB2E;
+    --shadow-ink: #030A06;
+    --focus: #FFCB2E;
+    --tab-bg: #FFCB2E;
+    --tab-fg: #0B1A13;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0B1A13;
+  --surface: #11261B;
+  --fg: #E7F0E9;
+  --muted: #A2B8AA;
+  --rule: #DCE8DF;
+  --pine: #143525;
+  --on-pine: #E7F0E9;
+  --on-pine-muted: #A8C3B2;
+  --pine-rule: #2F5A45;
+  --yellow: #FFCB2E;
+  --on-yellow: #0B1A13;
+  --num-accent: #FFCB2E;
+  --shadow-ink: #030A06;
+  --focus: #FFCB2E;
+  --tab-bg: #FFCB2E;
+  --tab-fg: #0B1A13;
+  color-scheme: dark;
+}
+body { background: var(--bg); color: var(--fg) }
+
+/* ---------- base ---------- */
+*, *::before, *::after { box-sizing: border-box }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 1rem }
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  padding-bottom: calc(78px + env(safe-area-inset-bottom, 0px));
+}
+h1, h2, h3, p, ol, ul, dl, dd, figure, fieldset, legend { margin: 0; padding: 0 }
+ol, ul { list-style: none }
+fieldset { border: 0; min-width: 0 }
+a { color: inherit }
+svg { display: block }
+::selection { background: var(--yellow); color: var(--on-yellow) }
+
+a:focus-visible, button:focus-visible, textarea:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.wrap {
+  width: 100%;
+  max-width: calc(var(--max) + 64px);
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+.skip {
+  position: absolute; left: 12px; top: -100px; z-index: 50;
+  background: var(--yellow); color: var(--on-yellow);
+  padding: .75rem 1rem; font-weight: 700; text-decoration: none;
+}
+.skip:focus { top: 12px }
+
+.on-pine {
+  background: var(--pine);
+  color: var(--on-pine);
+  --fg: var(--on-pine);
+  --muted: var(--on-pine-muted);
+  --rule: var(--on-pine);
+  --focus: var(--yellow);
+  --tab-bg: var(--yellow);
+  --tab-fg: var(--on-yellow);
+}
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: "wdth" var(--wdth-display), "opsz" 96;
+  font-stretch: 75%;
+  letter-spacing: -0.015em;
+  line-height: .88;
+}
+
+.tab {
+  display: inline-block;
+  background: var(--tab-bg);
+  color: var(--tab-fg);
+  font-family: var(--font-body);
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: .45em .65em .4em;
+  transform: rotate(-1.5deg);
+  margin-bottom: 1.1rem;
+}
+
+.aside {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+.aside-lg {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(1.4rem, 5.4vw, 2.1rem);
+  line-height: 1.12;
+  color: var(--muted);
+  max-width: 26ch;
+  margin-top: .9rem;
+}
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  min-height: 48px;
+  padding: .7rem 1.1rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: "wdth" 85, "opsz" 24;
+  font-size: 1.05rem;
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 2px solid var(--fg);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.btn-yellow {
+  background: var(--yellow); color: var(--on-yellow);
+  border-color: var(--shadow-ink);
+  box-shadow: 3px 3px 0 var(--shadow-ink);
+}
+.btn-yellow:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--shadow-ink) }
+.btn-yellow:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--shadow-ink) }
+.btn-ghost { background: var(--bg); color: var(--fg) }
+.btn-ghost:hover { background: var(--fg); color: var(--bg) }
+
+/* ---------- header ---------- */
+.site-head { border-bottom: 3px solid var(--rule); background: var(--bg) }
+.head-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  min-height: 64px; padding-block: .7rem;
+}
+.wordmark {
+  display: inline-flex; align-items: center; gap: .35rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: "wdth" 75, "opsz" 48;
+  font-size: 1.65rem;
+  line-height: 1;
+  text-transform: uppercase;
+  text-decoration: none;
+  letter-spacing: -.01em;
+  min-height: 44px;
+}
+.wordmark .wm-b {
+  display: inline-block;
+  background: var(--yellow); color: var(--on-yellow);
+  padding: .1em .25em .06em;
+  border-radius: 3px;
+  transform: rotate(-4deg);
+}
+.head-tag {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.05rem;
+  line-height: 1.1;
+  text-align: right;
+  color: var(--muted);
+}
+.head-cta { display: none }
+
+/* ---------- hero ---------- */
+.hero { overflow: clip; padding-block: clamp(1.75rem, 7vw, 4rem) clamp(3rem, 10vw, 6rem) }
+.hero .wrap { position: relative }
+.eyebrow {
+  display: flex; align-items: center; gap: .55rem;
+  font-size: var(--step--1);
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+.eyebrow .dot { width: .8rem; height: .8rem; background: var(--yellow); border: 2px solid var(--shadow-ink); border-radius: 50% }
+
+.hero h1 { font-weight: 800 }
+.h1-lead {
+  font-size: clamp(3.4rem, 16vw, 7.5rem);
+  color: var(--fg);
+}
+.hero h1 .aside {
+  display: inline-block;
+  font-size: clamp(1.5rem, 6vw, 2.4rem);
+  line-height: 1;
+  transform: rotate(-3deg) translateY(-.1em);
+  margin-left: .15em;
+}
+.bignum {
+  display: block;
+  margin-top: .08em;
+  font-size: var(--step-hero);
+  line-height: .8;
+  letter-spacing: -.02em;
+  color: var(--fg);
+  text-decoration: none;
+  -webkit-user-select: text; user-select: text;
+  font-variant-numeric: lining-nums;
+}
+.bignum .ln { display: block }
+.bignum .dash, .bignum .ln-last { color: var(--num-accent) }
+.bignum:hover .ln-last { text-decoration: underline; text-decoration-color: var(--yellow); text-decoration-thickness: .07em; text-underline-offset: .06em }
+
+/* stickers: the signature moment */
+.stickers {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .55rem .6rem;
+  margin-top: -.35rem;
+  position: relative;
+  z-index: 2;
+}
+.sticker {
+  display: inline-flex; align-items: center; justify-content: center; text-align: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: "wdth" 80, "opsz" 24;
+  font-size: .95rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  padding: .7em .9em .62em;
+  border: 2px solid var(--shadow-ink);
+  border-radius: 8px;
+  box-shadow: 3px 3px 0 var(--shadow-ink);
+  transform: rotate(var(--r, 0deg));
+  animation: stick .75s cubic-bezier(.2, .9, .25, 1) var(--d, 0s) both;
+}
+.s-yellow { background: var(--yellow); color: var(--on-yellow) }
+.s-paper { background: var(--surface); color: var(--fg); border-color: var(--fg) }
+.s-circle {
+  width: 5.9rem; height: 5.9rem; padding: .5rem;
+  border-radius: 50%;
+  background: var(--pine); color: var(--on-pine);
+  outline: 2px dashed var(--on-pine);
+  outline-offset: -8px;
+  font-size: .85rem;
+}
+@keyframes stick {
+  0%   { transform: translateY(-14px) rotate(calc(var(--r, 0deg) * -2)) scale(.55) }
+  55%  { transform: translateY(0) rotate(calc(var(--r, 0deg) * 1.35)) scale(1.08) }
+  78%  { transform: rotate(calc(var(--r, 0deg) * .85)) scale(.97) }
+  100% { transform: rotate(var(--r, 0deg)) scale(1) }
+}
+
+.hero-foot { margin-top: clamp(1.75rem, 6vw, 3rem); display: grid; gap: 1.25rem }
+.lede { font-size: var(--step-1); line-height: 1.45; max-width: 34ch }
+.lede strong { font-weight: 700; background: linear-gradient(to top, var(--yellow) .38em, transparent .38em); color: inherit }
+.hero-links { display: grid; gap: 1rem; align-content: start }
+.textlink {
+  display: inline-flex; align-items: center; min-height: 44px;
+  font-weight: 700; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: .2em;
+  text-decoration-color: var(--yellow);
+}
+.textlink:hover { text-decoration-thickness: 4px }
+.serving {
+  font-size: var(--step--1);
+  color: var(--muted);
+  padding-top: .9rem;
+  border-top: 2px solid var(--rule);
+  max-width: 34rem;
+}
+.serving b { color: var(--fg) }
+
+/* ---------- services ---------- */
+.strip {
+  border-block: 3px solid var(--yellow);
+  overflow: hidden;
+  white-space: nowrap;
+  padding-block: .55rem .45rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: "wdth" 75, "opsz" 36;
+  font-size: 1.15rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--yellow);
+}
+.strip span { margin-right: 1.1rem }
+.strip i { font-family: var(--font-serif); font-weight: 400; text-transform: none; letter-spacing: 0; margin-right: 1.1rem; color: var(--on-pine) }
+
+.services { padding-bottom: var(--section-pad) }
+.svc-grid { display: grid; gap: 2.25rem; padding-top: var(--section-pad) }
+.svc-head h2 { font-size: var(--step-3) }
+
+.index { border-bottom: 3px solid var(--rule) }
+.svc {
+  display: grid;
+  grid-template-columns: 2.4rem minmax(0, 1fr) auto;
+  gap: .25rem .65rem;
+  align-items: start;
+  padding: 1.15rem .35rem 1.3rem;
+  border-top: 3px solid var(--rule);
+  text-decoration: none;
+  color: var(--fg);
+  transition: background-color .18s ease, color .18s ease;
+}
+.svc-num {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.7rem;
+  line-height: 1;
+  color: var(--yellow);
+  padding-top: .1rem;
+}
+.svc-name {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: "wdth" 75, "opsz" 96;
+  font-stretch: 75%;
+  font-size: clamp(1.9rem, 8.6vw, 4.4rem);
+  line-height: .9;
+  letter-spacing: -.005em;
+  text-transform: uppercase;
+  overflow-wrap: break-word;
+}
+.svc-desc {
+  display: block;
+  margin-top: .6rem;
+  max-width: 40ch;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.svc-go {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--yellow);
+  padding-top: .1rem;
+  transition: transform .18s ease;
+}
+@media (hover: hover) {
+  .svc:hover { background: var(--yellow); color: var(--on-yellow) }
+  .svc:hover .svc-num, .svc:hover .svc-desc, .svc:hover .svc-go { color: var(--on-yellow) }
+  .svc:hover .svc-go { transform: translateX(4px) }
+}
+.svc:focus-visible { outline-offset: -3px }
+
+/* ---------- team ---------- */
+.team { padding-block: var(--section-pad) }
+.team h2 { font-size: var(--step-3); max-width: 12ch }
+.people { display: grid; gap: 3.5rem; margin-top: clamp(2.5rem, 8vw, 4.5rem) }
+.person { max-width: 30rem }
+.tag {
+  width: min(100%, 20rem);
+  background: var(--yellow);
+  color: var(--on-yellow);
+  border-radius: 16px;
+  padding: 0 .65rem .65rem;
+  box-shadow: 5px 5px 0 var(--shadow-ink);
+  transform: rotate(var(--r, -2deg));
+  margin: 0 0 1.75rem .25rem;
+}
+.tag-top { text-align: center; padding: .7rem 0 .55rem }
+.tag-hello {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: "wdth" 75, "opsz" 96;
+  font-size: 2.9rem;
+  line-height: .82;
+  text-transform: uppercase;
+  letter-spacing: .01em;
+}
+.tag-my { display: block; font-family: var(--font-serif); font-style: italic; font-size: 1.2rem; line-height: 1.1 }
+.tag-body {
+  background: var(--surface);
+  color: var(--fg);
+  border-radius: 8px;
+  padding: .4rem 1rem .5rem;
+}
+.sig { width: 100%; height: auto; aspect-ratio: 220 / 100 }
+.sig path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sig.is-drawing path {
+  stroke-dasharray: 1 1.02;
+  animation: ink var(--t, .9s) cubic-bezier(.45, .05, .35, 1) var(--w, 0s) both;
+}
+@keyframes ink { from { stroke-dashoffset: 1 } to { stroke-dashoffset: 0 } }
+
+.person h3 { font-size: clamp(2.2rem, 9vw, 3.2rem) }
+.role {
+  margin-top: .45rem;
+  font-size: var(--step--1);
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.say { margin-top: 1rem; font-size: 1.1rem; line-height: 1.55; max-width: 38ch }
+
+/* ---------- booking ---------- */
+.book { padding-block: 0 var(--section-pad) }
+.book-grid { display: grid; gap: 2rem; padding-top: var(--section-pad); border-top: 3px solid var(--rule) }
+.book-intro h2 { font-size: var(--step-3); max-width: 10ch }
+.book-intro .textlink { margin-top: 1rem }
+
+.panel {
+  background: var(--surface);
+  border: 3px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: 8px 8px 0 var(--yellow);
+  padding: 1.25rem 1.1rem 1.5rem;
+  margin-right: 8px;
+}
+.progress { display: flex; align-items: center; gap: .9rem; margin-bottom: 1.4rem }
+.progress-label {
+  font-size: var(--step--1);
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.bars { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px }
+.bars span { height: 10px; border: 2px solid var(--rule); border-radius: 2px }
+.bars .on { background: var(--yellow) }
+
+.panel legend { font-size: clamp(2.3rem, 11vw, 3.6rem); padding: 0 }
+.legend-aside { display: block; margin-top: .35rem; font-size: 1.15rem; font-family: var(--font-serif); font-style: italic; color: var(--muted) }
+.choices { display: grid; gap: .6rem; margin-top: 1.25rem }
+.choice { position: relative; display: block }
+.choice input {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; margin: 0;
+  opacity: 0; cursor: pointer; z-index: 1;
+}
+.choice-body {
+  display: flex; align-items: center; gap: .9rem;
+  min-height: 4rem;
+  padding: .75rem 1rem;
+  border: 2px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--bg);
+  transition: background-color .15s ease, transform .2s cubic-bezier(.2, .9, .25, 1);
+}
+.mark {
+  flex: none;
+  width: 1.55rem; height: 1.55rem;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  display: grid; place-items: center;
+}
+.mark::after {
+  content: "";
+  width: .7rem; height: .7rem;
+  border-radius: 50%;
+  background: currentColor;
+  transform: scale(0);
+  transition: transform .15s ease;
+}
+.choice-text { display: block; min-width: 0 }
+.choice-name {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: "wdth" 85, "opsz" 24;
+  font-size: 1.3rem;
+  line-height: 1.05;
+}
+.choice-hint { display: block; font-size: .92rem; line-height: 1.35; color: var(--muted); margin-top: .2rem }
+.choice:hover .choice-body { border-width: 2px; background: var(--surface) }
+.choice input:checked + .choice-body {
+  background: var(--yellow);
+  color: var(--on-yellow);
+  border-color: var(--shadow-ink);
+  transform: rotate(-.6deg);
+}
+.choice input:checked + .choice-body .choice-hint { color: var(--on-yellow) }
+.choice input:checked + .choice-body .mark::after { transform: scale(1) }
+.choice input:focus-visible + .choice-body { outline: 3px solid var(--focus); outline-offset: 3px }
+
+.field { margin-top: 1.5rem }
+.field label { display: block; font-weight: 700 }
+.field .hint { display: block; font-family: var(--font-serif); font-style: italic; font-size: 1.1rem; color: var(--muted); font-weight: 400; margin-top: .1rem }
+.field textarea {
+  display: block;
+  width: 100%;
+  margin-top: .6rem;
+  min-height: 6.5rem;
+  resize: vertical;
+  padding: .8rem .9rem;
+  font: inherit;
+  font-size: 1rem;
+  color: var(--fg);
+  background: var(--bg);
+  border: 2px solid var(--rule);
+  border-radius: var(--radius);
+}
+.form-foot { display: grid; gap: .9rem; margin-top: 1.5rem }
+.btn-next { width: 100%; min-height: 56px; font-size: 1.2rem }
+.status { min-height: 1.5em; font-size: 1rem; font-weight: 600 }
+.status:empty { min-height: 0 }
+
+/* ---------- footer ---------- */
+.site-foot { padding-block: var(--section-pad) clamp(2rem, 6vw, 3rem) }
+.foot-mark {
+  font-size: min(28vw, 18rem);
+  text-transform: uppercase;
+  line-height: .8;
+}
+.foot-mark span { display: block }
+.foot-mark .wm-b { color: var(--yellow) }
+.foot-grid { display: grid; gap: 1.4rem; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 3px solid var(--rule) }
+.foot-grid dt {
+  font-size: .78rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--muted);
+}
+.foot-grid dd { margin-top: .2rem; font-size: 1.15rem; overflow-wrap: anywhere }
+.foot-grid a {
+  display: inline-flex; align-items: center; min-height: 44px;
+  font-weight: 700; text-decoration-color: var(--yellow); text-decoration-thickness: 2px; text-underline-offset: .2em;
+}
+.foot-grid .big a { font-family: var(--font-display); font-weight: 800; font-variation-settings: "wdth" 75, "opsz" 72; font-size: 2.3rem; line-height: 1; text-decoration: none }
+.foot-grid .big a:hover { color: var(--yellow) }
+.fine { margin-top: 2.5rem; font-size: var(--step--1); color: var(--muted) }
+
+/* ---------- phone call bar ---------- */
+.callbar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+  display: grid; grid-template-columns: 1fr 1fr; gap: .55rem;
+  padding: .6rem max(16px, env(safe-area-inset-right, 0px)) calc(.6rem + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  background: var(--pine);
+  border-top: 3px solid var(--yellow);
+  --fg: var(--on-pine);
+  --bg: var(--pine);
+  --focus: var(--yellow);
+}
+.callbar .btn { min-height: 52px; font-size: 1.1rem; padding-inline: .5rem }
+.callbar .btn-yellow { box-shadow: none }
+
+/* ---------- ≥ 768px ---------- */
+@media (min-width: 768px) {
+  body { padding-bottom: 0 }
+  .callbar { display: none }
+  .wrap { padding-left: max(32px, env(safe-area-inset-left, 0px)); padding-right: max(32px, env(safe-area-inset-right, 0px)) }
+  .site-head { position: sticky; top: 0; z-index: 20 }
+  .head-tag { display: none }
+  .head-cta { display: flex; gap: .6rem }
+  html { scroll-padding-top: 90px }
+
+  .bignum { font-size: min(calc((100vw - 64px) / 4.2), 20rem); line-height: .84; white-space: nowrap }
+  .bignum .ln { display: inline }
+  .stickers { justify-content: flex-end; margin-top: .6rem; gap: .8rem }
+  .sticker { font-size: 1.1rem }
+  .s-circle { width: 7rem; height: 7rem; font-size: 1rem }
+  .hero-foot { grid-template-columns: 1.2fr 1fr; gap: 2.5rem; align-items: start }
+
+  .svc { grid-template-columns: 4rem minmax(0, 1fr) auto; padding: 1.5rem .75rem 1.6rem }
+  .svc-num { font-size: 2.4rem }
+  .svc-go { font-size: 2.4rem }
+
+  .people { grid-template-columns: 1fr 1fr; gap: 3rem }
+  .person:nth-child(2) { margin-top: 4rem }
+
+  .choices { grid-template-columns: 1fr 1fr }
+  .choices .wide { grid-column: 1 / -1 }
+  .panel { padding: 2rem 2rem 2.25rem }
+  .form-foot { grid-template-columns: auto 1fr; align-items: center; gap: 1.25rem }
+  .btn-next { width: auto; padding-inline: 1.75rem }
+
+  .foot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem }
+}
+
+/* ---------- ≥ 1100px ---------- */
+@media (min-width: 1100px) {
+  .stickers {
+    position: absolute;
+    top: .5rem;
+    right: max(32px, env(safe-area-inset-right, 0px));
+    margin: 0;
+    max-width: 30rem;
+  }
+  .sticker { font-size: 1.2rem }
+  .s-circle { width: 7.75rem; height: 7.75rem; font-size: 1.05rem }
+
+  .svc-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 8fr); gap: 4rem; align-items: start }
+  .svc-head { position: sticky; top: 7rem }
+
+  .book-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 4rem; align-items: start }
+  .book-intro { position: sticky; top: 7rem }
+
+  .foot-grid { grid-template-columns: 1.2fr 1.4fr 1fr 1.4fr }
+}
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto }
+  *, *::before, *::after { animation: none !important; transition: none !important }
+  .sig.is-drawing path { stroke-dasharray: none }
+}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&amp;family=Instrument+Serif:ital@0;1&amp;display=swap">
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-head">
+  <div class="wrap head-row">
+    <a class="wordmark" href="#top" aria-label="Superior HVAC, back to top"><span>Superior</span><span class="wm-b">HVAC</span></a>
+    <p class="head-tag">Heating &amp; cooling<br>out of Norwalk, Ohio</p>
+    <nav class="head-cta" aria-label="Quick actions">
+      <a class="btn btn-ghost" href="#book">Request Service</a>
+      <a class="btn btn-yellow" href="tel:+14197061724">Call 419-706-1724</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="hero" id="top" aria-labelledby="hero-title">
+    <div class="wrap">
+      <p class="eyebrow"><span class="dot" aria-hidden="true"></span>Heating &amp; cooling, Northwest Ohio</p>
+
+      <h1 id="hero-title" class="display">
+        <span class="h1-lead">Call Joey.</span><span class="aside">(he picks up)</span>
+        <a class="bignum" href="tel:+14197061724"><span class="ln">419<span class="dash">-</span></span><span class="ln">706<span class="dash">-</span></span><span class="ln ln-last">1724</span></a>
+      </h1>
+
+      <ul class="stickers" aria-label="About Superior HVAC">
+        <li class="sticker s-yellow" style="--r:-6deg; --d:.2s">Family-run</li>
+        <li class="sticker s-circle" style="--r:8deg; --d:.38s">Norwalk-<br>based</li>
+        <li class="sticker s-paper" style="--r:-2.5deg; --d:.56s">We answer<br>the phone</li>
+      </ul>
+
+      <div class="hero-foot">
+        <p class="lede">Furnace quit? AC blowing warm? Call the number. <strong>A real person picks up</strong>, usually Joey, and you'll know what happens next before you hang up.</p>
+        <div class="hero-links">
+          <a class="textlink" href="#book">Rather type it out? Request service &rarr;</a>
+          <p class="serving"><b>Serving</b> Norwalk, Sandusky, Huron, Willard &amp; surrounding areas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="services on-pine" id="services" aria-labelledby="svc-title">
+    <div class="strip" aria-hidden="true"><span>Furnaces</span><i>and</i><span>Air conditioners</span><i>and</i><span>New installs</span><i>and</i><span>Tune-ups</span><i>and</i><span>Furnaces</span><i>and</i><span>Air conditioners</span></div>
+    <div class="wrap svc-grid">
+      <div class="svc-head">
+        <p class="tab">What we fix</p>
+        <h2 id="svc-title" class="display">Warm in winter. Cool in July.</h2>
+        <p class="aside-lg">That's the whole job. We just do it right.</p>
+      </div>
+
+      <ol class="index">
+        <li>
+          <a class="svc" href="#book" data-pick="svc-ac">
+            <span class="svc-num" aria-hidden="true">01</span>
+            <span><span class="svc-name">AC Repair</span><span class="svc-desc">Blowing warm, running nonstop, or not kicking on at all. We'll find out why and fix it.</span></span>
+            <span class="svc-go" aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+        <li>
+          <a class="svc" href="#book" data-pick="svc-heat">
+            <span class="svc-num" aria-hidden="true">02</span>
+            <span><span class="svc-name">Furnace &amp; Heating Repair</span><span class="svc-desc">No heat, odd noises, a smell you don't like. Call before the house gets cold.</span></span>
+            <span class="svc-go" aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+        <li>
+          <a class="svc" href="#book" data-pick="svc-install">
+            <span class="svc-num" aria-hidden="true">03</span>
+            <span><span class="svc-name">Installation &amp; Replacement</span><span class="svc-desc">When it's time for a new furnace or AC, we size it right, put it in clean, and show you how it runs.</span></span>
+            <span class="svc-go" aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+        <li>
+          <a class="svc" href="#book" data-pick="svc-tune">
+            <span class="svc-num" aria-hidden="true">04</span>
+            <span><span class="svc-name">Maintenance &amp; Tune-Ups</span><span class="svc-desc">A yearly once-over so your system runs better, and so you don't meet us for the first time on the coldest night of the year.</span></span>
+            <span class="svc-go" aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="team" id="team" aria-labelledby="team-title">
+    <div class="wrap">
+      <p class="tab">Who you'll meet</p>
+      <h2 id="team-title" class="display">Two guys. Both of them show up.</h2>
+      <p class="aside-lg">No call center. No mystery tech. Just us.</p>
+
+      <div class="people">
+        <article class="person" aria-labelledby="joey-name">
+          <div class="tag" style="--r:-2.5deg">
+            <p class="tag-top"><span class="tag-hello">Hello</span><span class="tag-my">my name is</span></p>
+            <div class="tag-body">
+              <svg class="sig" viewBox="0 0 220 100" role="img" aria-label="Joey's signature">
+                <path pathLength="1" style="--t:.35s; --w:0s" d="M24 22 C44 17 64 15 82 17"/>
+                <path pathLength="1" style="--t:.6s; --w:.3s" d="M60 18 C60 40 58 58 50 70 C42 82 24 81 19 69 C16 60 26 55 35 59"/>
+                <path pathLength="1" style="--t:.45s; --w:.85s" d="M90 50 C79 48 74 62 82 67 C91 71 100 57 92 50 C90 48 88 49 88 50"/>
+                <path pathLength="1" style="--t:1s; --w:1.25s" d="M104 58 C112 58 120 52 116 46 C112 42 103 48 105 58 C107 68 119 66 125 58 C129 52 131 48 133 46 C133 56 135 64 143 62 C149 60 153 50 155 46 C155 60 155 76 149 86 C143 95 131 92 135 82 C139 72 160 66 182 59"/>
+                <path pathLength="1" style="--t:.5s; --w:2.15s" d="M22 90 C72 84 142 82 204 77"/>
+              </svg>
+            </div>
+          </div>
+          <h3 id="joey-name" class="display">Joey Ojeda</h3>
+          <p class="role">Owner / Operator</p>
+          <p class="say">This is my company and my name's on every job. You call, I pick up, and I tell you straight what's going on with your system.</p>
+        </article>
+
+        <article class="person" aria-labelledby="ramon-name">
+          <div class="tag" style="--r:2deg">
+            <p class="tag-top"><span class="tag-hello">Hello</span><span class="tag-my">my name is</span></p>
+            <div class="tag-body">
+              <svg class="sig" viewBox="0 0 220 100" role="img" aria-label="Ramon's signature">
+                <path pathLength="1" style="--t:.8s; --w:0s" d="M20 72 C22 52 24 34 27 18 C42 12 60 16 58 30 C56 42 38 46 29 44 C39 52 47 62 58 74"/>
+                <path pathLength="1" style="--t:1.5s; --w:.7s" d="M72 52 C64 48 58 60 64 64 C70 68 76 58 78 50 C78 58 80 66 86 64 C90 60 92 54 94 50 C94 58 94 64 94 66 C96 56 102 48 106 52 C108 56 106 62 106 66 C108 56 114 48 118 52 C120 56 118 62 120 66 C124 66 130 54 136 52 C128 50 124 62 130 66 C136 68 142 58 138 52 C142 54 146 52 150 50 C150 58 150 64 150 66 C154 56 160 48 166 52 C170 56 168 64 172 66 C180 66 192 58 202 54"/>
+                <path pathLength="1" style="--t:.5s; --w:2.1s" d="M30 86 C80 80 150 80 196 84"/>
+              </svg>
+            </div>
+          </div>
+          <h3 id="ramon-name" class="display">Ramon Negrete</h3>
+          <p class="role">Lead Installer</p>
+          <p class="say">Ramon runs our installs. Getting a new furnace or AC? He's the one putting it in, and he doesn't leave until it's running right and you know how to use it.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="book" id="book" aria-labelledby="book-title">
+    <div class="wrap book-grid">
+      <div class="book-intro">
+        <p class="tab">Get on the schedule</p>
+        <h2 id="book-title" class="display">Request service.</h2>
+        <p class="aside-lg">Three quick steps. Or skip all this and call Joey.</p>
+        <a class="textlink" href="tel:+14197061724">419-706-1724</a>
+      </div>
+
+      <form class="panel" id="book-form" action="#" novalidate>
+        <div class="progress">
+          <p class="progress-label" id="step-label">Step 1 of 3</p>
+          <div class="bars" aria-hidden="true"><span class="on"></span><span></span><span></span></div>
+        </div>
+
+        <fieldset aria-describedby="step-label">
+          <legend class="display">What's going on?<span class="legend-aside">Pick the closest one. We'll sort out the rest.</span></legend>
+
+          <div class="choices">
+            <label class="choice" for="svc-ac">
+              <input type="radio" name="service" id="svc-ac" value="ac-repair">
+              <span class="choice-body"><span class="mark" aria-hidden="true"></span><span class="choice-text"><span class="choice-name">AC Repair</span><span class="choice-hint">Not cooling, not running, or making noise</span></span></span>
+            </label>
+            <label class="choice" for="svc-heat">
+              <input type="radio" name="service" id="svc-heat" value="heating-repair">
+              <span class="choice-body"><span class="mark" aria-hidden="true"></span><span class="choice-text"><span class="choice-name">Furnace &amp; Heating Repair</span><span class="choice-hint">No heat, short cycling, strange smells</span></span></span>
+            </label>
+            <label class="choice" for="svc-install">
+              <input type="radio" name="service" id="svc-install" value="install-replace">
+              <span class="choice-body"><span class="mark" aria-hidden="true"></span><span class="choice-text"><span class="choice-name">Installation &amp; Replacement</span><span class="choice-hint">A new furnace, AC, or whole system</span></span></span>
+            </label>
+            <label class="choice" for="svc-tune">
+              <input type="radio" name="service" id="svc-tune" value="maintenance">
+              <span class="choice-body"><span class="mark" aria-hidden="true"></span><span class="choice-text"><span class="choice-name">Maintenance &amp; Tune-Up</span><span class="choice-hint">A yearly check before the season hits</span></span></span>
+            </label>
+            <label class="choice wide" for="svc-unsure">
+              <input type="radio" name="service" id="svc-unsure" value="not-sure">
+              <span class="choice-body"><span class="mark" aria-hidden="true"></span><span class="choice-text"><span class="choice-name">Not sure. Something's just off.</span><span class="choice-hint">That's fine. Tell us what you're noticing.</span></span></span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="field">
+          <label for="book-notes">Anything else? <span class="hint">Optional. A sentence is plenty, like "furnace clicks but no heat."</span></label>
+          <textarea id="book-notes" name="notes" rows="3" maxlength="500"></textarea>
+        </div>
+
+        <div class="form-foot">
+          <button class="btn btn-yellow btn-next" type="submit">Next: where &amp; when &rarr;</button>
+          <p class="status" id="book-status" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-foot on-pine">
+  <div class="wrap">
+    <p class="foot-mark display" aria-label="Superior HVAC"><span>Superior</span><span class="wm-b">HVAC</span></p>
+    <p class="aside-lg">You made it to the bottom. Joey says hi. Give him a call.</p>
+    <dl class="foot-grid">
+      <div class="big"><dt>Call</dt><dd><a href="tel:+14197061724">419-706-1724</a></dd></div>
+      <div><dt>Email</dt><dd><a href="mailto:superiorhvac90@gmail.com">superiorhvac90@gmail.com</a></dd></div>
+      <div><dt>Facebook</dt><dd><a href="https://www.facebook.com/profile.php?id=61562683560654" rel="noopener" target="_blank">Superior HVAC on Facebook</a></dd></div>
+      <div><dt>Serving</dt><dd>Norwalk, Sandusky, Huron, Willard &amp; surrounding areas</dd></div>
+    </dl>
+    <p class="fine">&copy; 2026 Superior HVAC. Family-run heating &amp; cooling, based in Norwalk, Ohio.</p>
+  </div>
+</footer>
+
+<nav class="callbar" aria-label="Call or request service">
+  <a class="btn btn-yellow" href="tel:+14197061724">Call Joey</a>
+  <a class="btn btn-ghost" href="#book">Request Service</a>
+</nav>
+
+<script>
+(() => {
+  const form = document.getElementById('book-form');
+  const status = document.getElementById('book-status');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const picked = form.querySelector('input[name="service"]:checked');
+    if (!picked) {
+      status.textContent = 'Pick one first so we know who to send.';
+      form.querySelector('input[name="service"]').focus();
+      return;
+    }
+    const name = picked.closest('label').querySelector('.choice-name').textContent;
+    status.textContent = 'Got it: ' + name + '. On the real site, step 2 asks where you are and the best way to reach you.';
+  });
+
+  document.querySelectorAll('[data-pick]').forEach((link) => {
+    link.addEventListener('click', () => {
+      const radio = document.getElementById(link.dataset.pick);
+      if (radio) radio.checked = true;
+    });
+  });
+
+  // Signatures are fully drawn at rest; they re-ink once when they come into view.
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduce && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-drawing');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -12% 0px' });
+    document.querySelectorAll('.sig').forEach((sig) => io.observe(sig));
+  }
+})();
+</script>

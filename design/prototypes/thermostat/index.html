@@ -1,0 +1,638 @@
+<title>Superior HVAC · Thermostat</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..700,0..100,0..1&family=Inter+Tight:wght@400..700&display=swap">
+<style>
+/* ============================================================
+   DESIGN TOKENS · Direction A "Thermostat"
+   Layout concept: one vertical temperature scale. The page runs warm (top) to cool (bottom);
+   --t (0 = ember, 1 = ice) follows scroll and every live accent is mixed from it.
+   ============================================================ */
+@property --t { syntax: "<number>"; inherits: true; initial-value: 0.5; }
+
+:root {
+  /* ground: cool grey-green stone, so both ember and ice read */
+  --bg: #E8ECE9;
+  --bg-2: #DEE4E0;
+  --surface: #F3F5F2;
+  --fg: #17201E;
+  --fg-2: #4A5652;
+  --line: #C3CBC7;
+  --line-strong: #8E9994;
+  /* the spectrum */
+  --ember: #A3461F;
+  --ice: #2C6B66;
+  --ember-tint: #EBD6C9;
+  --ice-tint: #CFE3DE;
+  --on-accent: #FFFFFF;
+  --glow: 0;               /* 0 in light, >0 in dark: how much ember/ice bloom */
+  --focus: #17201E;
+
+  /* type */
+  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-body: "Inter Tight", "Inter", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  --step--1: 0.8125rem;
+  --step-0: 1rem;
+  --step-1: 1.1875rem;
+  --step-2: clamp(1.5rem, 1.2rem + 1.4vw, 2rem);
+  --step-3: clamp(2.1rem, 1.5rem + 3vw, 3.25rem);
+  --step-4: clamp(2.5rem, 1.6rem + 5vw, 4.75rem);
+  --readout: clamp(5.5rem, 3rem + 14vw, 8.5rem);
+
+  /* shape + space */
+  --radius: 3px;
+  --measure: 34rem;
+  --wrap: 1180px;
+  --bar-h: 72px;
+
+  /* live, scroll-driven accent (derived; do not edit) */
+  --accent: color-mix(in oklch, var(--ember) calc((1 - var(--t)) * 100%), var(--ice));
+  --accent-soft: color-mix(in oklch, var(--accent) 14%, transparent);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1514;
+    --bg-2: #131C1A;
+    --surface: #18221F;
+    --fg: #E4EBE7;
+    --fg-2: #A3B1AB;
+    --line: #26322F;
+    --line-strong: #4A5853;
+    --ember: #F2925F;
+    --ice: #7DD5C6;
+    --ember-tint: #2E1C15;
+    --ice-tint: #12302B;
+    --on-accent: #0E1514;
+    --glow: 1;
+    --focus: #E4EBE7;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1514;
+  --bg-2: #131C1A;
+  --surface: #18221F;
+  --fg: #E4EBE7;
+  --fg-2: #A3B1AB;
+  --line: #26322F;
+  --line-strong: #4A5853;
+  --ember: #F2925F;
+  --ice: #7DD5C6;
+  --ember-tint: #2E1C15;
+  --ice-tint: #12302B;
+  --on-accent: #0E1514;
+  --glow: 1;
+  --focus: #E4EBE7;
+  color-scheme: dark;
+}
+
+/* ---------- the one orchestrated moment: warm to cool on scroll ---------- */
+@keyframes temperature { from { --t: 0; } to { --t: 1; } }
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    :root {
+      animation-name: temperature;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-duration: auto;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --t: 0.5 !important; animation: none !important; }
+  *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* ---------- base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 16px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 calc(var(--bar-h) + env(safe-area-inset-bottom, 0px) + 24px);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+/* ambient room air: a faint wash of the live temperature */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 60% at 50% -10%, color-mix(in oklch, var(--accent) calc(9% + var(--glow) * 5%), transparent), transparent 70%),
+    radial-gradient(90% 50% at 50% 115%, color-mix(in oklch, var(--accent) calc(6% + var(--glow) * 4%), transparent), transparent 70%);
+}
+.wrap { max-width: var(--wrap); margin-inline: auto; }
+a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: var(--radius); }
+.num { font-variant-numeric: tabular-nums lining-nums; font-feature-settings: "tnum" 1, "lnum" 1; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; margin: 0; letter-spacing: -0.015em; font-optical-sizing: auto; }
+p { margin: 0; }
+
+.kicker {
+  display: flex; align-items: center; gap: 10px;
+  font-size: var(--step--1); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--fg-2);
+}
+.kicker .num { color: var(--accent); }
+.kicker::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 52px; padding: 0 22px;
+  font: 600 var(--step-0)/1 var(--font-body);
+  border-radius: var(--radius); border: 1px solid transparent;
+  text-decoration: none; cursor: pointer;
+  transition: background-color .2s, border-color .2s, transform .15s;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary {
+  background: var(--accent); color: var(--on-accent);
+  box-shadow: 0 0 calc(var(--glow) * 22px) color-mix(in oklch, var(--accent) 45%, transparent);
+}
+.btn-ghost { background: transparent; color: var(--fg); border-color: var(--line-strong); }
+.btn-ghost:hover { border-color: var(--fg); }
+.arrow { font-family: var(--font-display); font-size: 1.15em; line-height: 0; }
+
+/* ---------- header ---------- */
+.site-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding-block: 18px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.wordmark {
+  display: inline-flex; align-items: baseline; gap: 7px;
+  text-decoration: none; min-height: 44px;
+}
+.wordmark b {
+  font-family: var(--font-display); font-weight: 500; font-size: 1.5rem; letter-spacing: -0.02em;
+  font-variation-settings: "SOFT" 40, "WONK" 1;
+}
+.wordmark span {
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.16em; color: var(--fg-2);
+  padding-top: 4px;
+}
+.wordmark i {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--accent); align-self: flex-start; margin-top: 12px;
+  box-shadow: 0 0 calc(var(--glow) * 10px) var(--accent);
+}
+.header-cta { display: none; align-items: center; gap: 20px; }
+.header-phone { font-weight: 600; text-decoration: none; }
+.header-phone small { display: block; font-size: 0.75rem; font-weight: 500; color: var(--fg-2); letter-spacing: .02em; }
+.header-tag { font-size: var(--step--1); color: var(--fg-2); text-align: right; line-height: 1.3; }
+
+/* ---------- hero ---------- */
+.hero { padding-block: 36px 56px; display: grid; gap: 36px; }
+.hero-eyebrow { font-size: var(--step--1); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-2); }
+.hero h1 {
+  font-size: var(--step-4); line-height: 1.02; letter-spacing: -0.03em;
+  font-variation-settings: "SOFT" 30, "WONK" 0;
+  margin-top: 14px; max-width: 13ch;
+}
+.hero h1 em { padding-right: 0.06em; font-style: italic; font-variation-settings: "SOFT" 100, "WONK" 1; color: var(--accent); }
+.hero-lede { margin-top: 18px; font-size: var(--step-1); color: var(--fg-2); max-width: var(--measure); line-height: 1.5; }
+.hero-actions { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 12px; }
+.hero-phone { margin-top: 18px; font-size: var(--step--1); color: var(--fg-2); }
+.hero-phone a { color: var(--fg); font-weight: 600; user-select: all; -webkit-user-select: all; }
+
+.dial { position: relative; width: min(100%, 340px); margin-inline: auto; aspect-ratio: 1 / 0.92; }
+.dial svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.dial .track { fill: none; stroke: var(--line); stroke-width: 2; }
+.dial .band {
+  fill: none; stroke: url(#spectrum); stroke-width: 3; stroke-linecap: round;
+  filter: drop-shadow(0 0 calc(var(--glow) * 6px) color-mix(in oklch, var(--accent) 60%, transparent));
+}
+.dial .ticks { fill: none; stroke: var(--line-strong); stroke-width: 9; }
+.dial .stop-ember { stop-color: var(--ember); }
+.dial .stop-mid { stop-color: color-mix(in oklch, var(--ember), var(--ice)); }
+.dial .stop-ice { stop-color: var(--ice); }
+.dial .setpoint { fill: var(--bg); stroke: var(--accent); stroke-width: 3; }
+.dial .setpoint-glow { fill: var(--accent); opacity: calc(0.12 + var(--glow) * 0.18); }
+.dial .scale { fill: var(--fg-2); font: 500 12px var(--font-body); font-variant-numeric: tabular-nums; }
+.readout {
+  position: absolute; inset: 0; display: grid; place-content: center; text-align: center;
+  padding-top: 6%;
+}
+.readout-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-2); }
+.readout-value {
+  font-family: var(--font-display); font-size: var(--readout); line-height: 0.9; font-weight: 300;
+  font-variation-settings: "SOFT" 60, "WONK" 0; letter-spacing: -0.05em;
+  margin-top: 6px; margin-left: 0.12em;
+}
+.readout-value sup { font-size: 0.42em; vertical-align: 0; position: relative; top: -0.95em; margin-left: 0.02em; font-weight: 400; color: var(--accent); }
+.readout-status { margin-top: 12px; font-size: var(--step--1); color: var(--fg-2); display: inline-flex; gap: 8px; align-items: center; justify-content: center; }
+.readout-status::before {
+  content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+  box-shadow: 0 0 calc(var(--glow) * 10px) var(--accent);
+}
+.dial-ends { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+.dial-ends .warm { color: var(--ember); }
+.dial-ends .cool { color: var(--ice); }
+
+/* ---------- services: the spectrum ---------- */
+.services { padding-block: 40px 56px; }
+.section-head h2 { font-size: var(--step-3); line-height: 1.05; margin-top: 18px; max-width: 16ch; font-variation-settings: "SOFT" 30; }
+.section-head p { margin-top: 14px; color: var(--fg-2); max-width: var(--measure); }
+
+.spectrum { list-style: none; margin: 36px 0 0; padding: 0 0 0 34px; position: relative; display: grid; gap: 0; }
+.spectrum::before {
+  content: ""; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 3px; border-radius: 3px;
+  background: linear-gradient(to bottom, var(--ember), color-mix(in oklch, var(--ember), var(--ice)) 50%, var(--ice));
+  box-shadow: 0 0 calc(var(--glow) * 14px) color-mix(in oklch, var(--accent) 40%, transparent);
+}
+.stop {
+  --c: color-mix(in oklch, var(--ember) calc((1 - var(--pos)) * 100%), var(--ice));
+  --tint: color-mix(in oklch, var(--ember-tint) calc((1 - var(--pos)) * 100%), var(--ice-tint));
+  position: relative; padding-block: 22px 26px; border-top: 1px solid var(--line);
+}
+.stop:last-child { border-bottom: 1px solid var(--line); }
+.stop::before {
+  content: ""; position: absolute; left: -34px; top: 30px; width: 17px; height: 17px; border-radius: 50%;
+  background: var(--bg); border: 3px solid var(--c);
+  box-shadow: 0 0 calc(var(--glow) * 12px) color-mix(in oklch, var(--c) 60%, transparent);
+}
+.stop-side { display: flex; align-items: center; gap: 10px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c); }
+.stop h3 { font-size: var(--step-2); line-height: 1.12; margin-top: 8px; font-variation-settings: "SOFT" 20; }
+.stop p { margin-top: 10px; color: var(--fg-2); max-width: 30rem; }
+.stop-link {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 8px;
+  font-weight: 600; text-decoration: none; color: var(--fg);
+  border-bottom: 1px solid var(--c); padding-top: 6px;
+}
+.stop-link:hover { color: var(--c); }
+
+/* ---------- team ---------- */
+.team { padding-block: 40px 56px; }
+.people { margin-top: 32px; display: grid; gap: 28px; }
+.person { display: grid; grid-template-columns: 112px 1fr; gap: 18px; align-items: start; }
+.swatch {
+  aspect-ratio: 4 / 5; border-radius: var(--radius);
+  display: grid; place-items: end start; padding: 10px 12px; position: relative; overflow: hidden;
+  background: var(--tint); color: var(--c);
+}
+.person-joey { --c: var(--ember); --tint: var(--ember-tint); }
+.person-ramon { --c: var(--ice); --tint: var(--ice-tint); }
+.swatch b {
+  font-family: var(--font-display); font-weight: 400; font-size: 3.4rem; line-height: 0.85; letter-spacing: -0.04em;
+  font-variation-settings: "SOFT" 100, "WONK" 1; font-style: italic;
+  text-shadow: 0 0 calc(var(--glow) * 18px) color-mix(in oklch, var(--c) 55%, transparent);
+}
+.swatch::before {
+  content: ""; position: absolute; top: 12px; left: 12px; right: 12px; height: 1px; background: currentColor; opacity: .45;
+}
+.swatch small { position: absolute; top: 20px; left: 12px; font-size: 0.6875rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.person h3 { font-size: var(--step-2); line-height: 1.1; font-variation-settings: "SOFT" 20; }
+.person .role { margin-top: 6px; font-size: var(--step--1); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--c); }
+.person p.line { margin-top: 10px; color: var(--fg-2); }
+
+.serving {
+  margin-top: 40px; padding-top: 18px; border-top: 1px dashed var(--line-strong);
+  font-size: var(--step--1); color: var(--fg-2); display: flex; gap: 10px; align-items: baseline;
+}
+.serving::before { content: "\25CF"; color: var(--accent); font-size: 0.6rem; }
+
+/* ---------- booking preview ---------- */
+.book { padding-block: 40px 56px; }
+.book-panel {
+  margin-top: 28px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 22px 18px 24px;
+  box-shadow: 0 0 calc(var(--glow) * 40px) color-mix(in oklch, var(--accent) 10%, transparent);
+}
+.progress { display: grid; gap: 10px; }
+.progress-row { display: flex; justify-content: space-between; align-items: baseline; font-size: var(--step--1); color: var(--fg-2); font-weight: 600; }
+.progress-row .num { color: var(--fg); }
+.progress-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.progress-bar span { height: 4px; border-radius: 2px; background: var(--line); }
+.progress-bar span:first-child { background: var(--accent); box-shadow: 0 0 calc(var(--glow) * 8px) var(--accent); }
+fieldset { border: 0; margin: 22px 0 0; padding: 0; min-width: 0; }
+legend { font-family: var(--font-display); font-size: var(--step-2); line-height: 1.1; padding: 0; font-variation-settings: "SOFT" 30; }
+.choices { margin-top: 16px; display: grid; gap: 10px; }
+.choice { position: relative; }
+.choice input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.choice label {
+  --c: color-mix(in oklch, var(--ember) calc((1 - var(--pos)) * 100%), var(--ice));
+  display: grid; grid-template-columns: 22px 1fr; align-items: center; gap: 14px;
+  min-height: 64px; padding: 12px 16px;
+  background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius);
+  cursor: pointer; transition: border-color .15s, background-color .15s;
+}
+.choice label:hover { border-color: var(--line-strong); }
+.choice label::before {
+  content: ""; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line-strong); background: var(--bg);
+  transition: border-color .15s, box-shadow .15s;
+}
+.choice .name { font-weight: 600; font-size: var(--step-0); line-height: 1.25; display: block; }
+.choice .hint { font-size: var(--step--1); color: var(--fg-2); display: block; }
+.choice input:checked + label { border-color: var(--c); background: color-mix(in oklch, var(--c) 9%, var(--bg)); }
+.choice input:checked + label::before { border-color: var(--c); box-shadow: inset 0 0 0 4px var(--bg), inset 0 0 0 11px var(--c); }
+.choice input:focus-visible + label { outline: 2px solid var(--focus); outline-offset: 3px; }
+.field { margin-top: 22px; display: grid; gap: 8px; }
+.field label { font-weight: 600; }
+.field label span { font-weight: 400; color: var(--fg-2); }
+textarea {
+  font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line-strong); border-radius: var(--radius);
+  padding: 12px 14px; min-height: 104px; resize: vertical; width: 100%;
+}
+textarea::placeholder { color: var(--fg-2); }
+textarea:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.form-foot { margin-top: 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.form-foot .btn { flex: 1 1 auto; }
+.form-note { font-size: var(--step--1); color: var(--fg-2); min-height: 1.4em; flex-basis: 100%; }
+
+/* ---------- footer ---------- */
+.site-footer { padding-block: 40px 24px; border-top: 1px solid var(--line); display: grid; gap: 26px; }
+.footer-mark { font-family: var(--font-display); font-size: var(--step-3); line-height: 1; letter-spacing: -0.03em; font-variation-settings: "SOFT" 40, "WONK" 1; }
+.footer-mark span { color: var(--accent); }
+.footer-grid { display: grid; gap: 22px; }
+.footer-grid h2 { font-family: var(--font-body); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-2); }
+.footer-grid ul { list-style: none; margin: 8px 0 0; padding: 0; }
+.footer-grid li a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
+.footer-grid li a:hover { text-decoration: underline; }
+.footer-grid p { margin-top: 10px; }
+.legal { font-size: var(--step--1); color: var(--fg-2); }
+
+/* ---------- phone bottom bar ---------- */
+.callbar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+  display: grid; grid-template-columns: 1fr 1.35fr; gap: 10px;
+  padding: 10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  background: color-mix(in oklch, var(--bg) 88%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2); backdrop-filter: blur(14px) saturate(1.2);
+  border-top: 1px solid var(--line);
+}
+.callbar .btn { min-height: 50px; padding: 0 12px; }
+.callbar .btn-ghost { background: var(--surface); }
+
+/* ---------- ≥ 768 ---------- */
+@media (min-width: 768px) {
+  body { padding-bottom: 0; padding-left: max(32px, env(safe-area-inset-left, 0px)); padding-right: max(32px, env(safe-area-inset-right, 0px)); }
+  .callbar { display: none; }
+  .header-cta { display: flex; }
+  .site-header { padding-block: 22px 18px; }
+  .hero { padding-block: 64px 80px; }
+  .services, .team, .book { padding-block: 64px 80px; }
+  .people { grid-template-columns: 1fr 1fr; gap: 40px; }
+  .person { grid-template-columns: 160px 1fr; gap: 24px; }
+  .swatch b { font-size: 4.75rem; }
+  .book-panel { padding: 32px; }
+  .choices { grid-template-columns: 1fr 1fr; }
+  .form-foot .btn { flex: 0 0 auto; min-width: 200px; }
+  .form-note { flex-basis: auto; }
+  .footer-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ---------- ≥ 1100: the scale turns horizontal ---------- */
+@media (min-width: 1100px) {
+  .hero { grid-template-columns: 1.15fr 0.85fr; align-items: center; gap: 56px; padding-block: 88px 104px; }
+  .dial { width: 100%; max-width: 420px; }
+  .spectrum { padding: 46px 0 0; grid-template-columns: repeat(4, 1fr); gap: 32px; }
+  .spectrum::before {
+    left: 0; right: 0; top: 7px; bottom: auto; width: auto; height: 3px;
+    background: linear-gradient(to right, var(--ember), color-mix(in oklch, var(--ember), var(--ice)) 50%, var(--ice));
+  }
+  .stop, .stop:last-child { border: 0; padding-block: 0; }
+  .stop::before { left: 0; top: -46px; }
+  .book .wrap { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 56px; align-items: start; }
+  .book-panel { margin-top: 0; }
+  .site-footer { grid-template-columns: 1fr 2fr; align-items: start; }
+}
+</style>
+
+<header class="site-header wrap">
+  <a class="wordmark" href="#top" aria-label="Superior HVAC, home"><b>Superior</b><span>HVAC</span><i aria-hidden="true"></i></a>
+  <div class="header-cta">
+    <a class="header-phone num" href="tel:+14197061724"><small>Call Joey</small>419-706-1724</a>
+    <a class="btn btn-primary" href="#book">Request service</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero wrap" aria-labelledby="hero-title">
+    <div>
+      <p class="hero-eyebrow">Heating &amp; cooling · Family-run</p>
+      <h1 id="hero-title">We keep your house at <em>the number</em> you want.</h1>
+      <p class="hero-lede">Furnace quit in January? AC blowing warm in July? Call us. We come out, find what's wrong, and tell you straight what it needs.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#book">Request service <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="btn btn-ghost" href="#services">What we fix</a>
+      </div>
+      <p class="hero-phone">Or call <a class="num" href="tel:+14197061724">419-706-1724</a></p>
+    </div>
+
+    <figure class="dial" aria-label="Thermostat dial holding at 72 degrees" style="margin-block:0">
+      <svg viewBox="0 0 320 300" aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id="spectrum" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" class="stop-ember"/>
+            <stop offset="0.5" class="stop-mid"/>
+            <stop offset="1" class="stop-ice"/>
+          </linearGradient>
+        </defs>
+        <!-- 240° arc, 50°F at lower-left to 90°F at lower-right -->
+        <path class="track" d="M 52.9 221.8 A 124 124 0 1 1 267.1 221.8"/>
+        <path class="ticks" d="M 52.9 221.8 A 124 124 0 1 1 267.1 221.8" pathLength="400" stroke-dasharray="0.7 9.3"/>
+        <path class="band" d="M 38.8 230 A 140 140 0 1 1 281.2 230"/>
+        <circle class="setpoint-glow" cx="189.1" cy="23.1" r="17"/>
+        <circle class="setpoint" cx="189.1" cy="23.1" r="8"/>
+        <text class="scale" x="30" y="258" text-anchor="middle">50</text>
+        <text class="scale" x="290" y="258" text-anchor="middle">90</text>
+      </svg>
+      <figcaption class="readout">
+        <span class="readout-label">Set to</span>
+        <span class="readout-value num">72<sup>&deg;</sup></span>
+        <span class="readout-status">Holding steady</span>
+      </figcaption>
+      <div class="dial-ends" aria-hidden="true"><span class="warm">Heat</span><span class="cool">Cool</span></div>
+    </figure>
+  </section>
+
+  <section class="services wrap" id="services" aria-labelledby="services-title">
+    <div class="section-head">
+      <p class="kicker"><span class="num">01</span> Services</p>
+      <h2 id="services-title">Warm side, cool side, and everything in between.</h2>
+      <p>Four things we do, laid out the way your thermostat thinks about them.</p>
+    </div>
+    <ol class="spectrum">
+      <li class="stop" style="--pos:0">
+        <p class="stop-side">Warm side</p>
+        <h3>Furnace &amp; Heating Repair</h3>
+        <p>No heat, short cycling, a strange smell when it kicks on. We'll come find out why and get the house warm again.</p>
+        <a class="stop-link" href="#book" data-pick="svc-heat">Book a heating repair <span class="arrow" aria-hidden="true">&rarr;</span></a>
+      </li>
+      <li class="stop" style="--pos:0.4">
+        <p class="stop-side">Both seasons</p>
+        <h3>Maintenance &amp; Tune-Ups</h3>
+        <p>Fall for the furnace, spring for the AC. Small fixes now mean fewer surprises on the coldest night.</p>
+        <a class="stop-link" href="#book" data-pick="svc-tune">Book a tune-up <span class="arrow" aria-hidden="true">&rarr;</span></a>
+      </li>
+      <li class="stop" style="--pos:0.6">
+        <p class="stop-side">Both seasons</p>
+        <h3>HVAC Installation &amp; Replacement</h3>
+        <p>When it's time for new equipment, we size it to your house and put it in right. If a repair still makes more sense, we'll tell you.</p>
+        <a class="stop-link" href="#book" data-pick="svc-install">Ask about a new system <span class="arrow" aria-hidden="true">&rarr;</span></a>
+      </li>
+      <li class="stop" style="--pos:1">
+        <p class="stop-side">Cool side</p>
+        <h3>AC Repair</h3>
+        <p>Warm air from the vents, ice on the lines, or it just won't turn on. We'll get it cooling again.</p>
+        <a class="stop-link" href="#book" data-pick="svc-ac">Book an AC repair <span class="arrow" aria-hidden="true">&rarr;</span></a>
+      </li>
+    </ol>
+  </section>
+
+  <section class="team wrap" id="team" aria-labelledby="team-title">
+    <div class="section-head">
+      <p class="kicker"><span class="num">02</span> Who shows up</p>
+      <h2 id="team-title">Two people. You'll know us both by name.</h2>
+    </div>
+    <div class="people">
+      <article class="person person-joey">
+        <div class="swatch" aria-hidden="true"><small>Owner</small><b>JO</b></div>
+        <div>
+          <h3>Joey Ojeda</h3>
+          <p class="role">Owner/Operator</p>
+          <p class="line">I'm the one you'll talk to when you call. I'll explain what's wrong in plain English and what it'll take to fix.</p>
+        </div>
+      </article>
+      <article class="person person-ramon">
+        <div class="swatch" aria-hidden="true"><small>Installs</small><b>RN</b></div>
+        <div>
+          <h3>Ramon Negrete</h3>
+          <p class="role">Lead Installer</p>
+          <p class="line">Ramon runs our installs. He takes his time, cleans up after, and doesn't leave until it's running right.</p>
+        </div>
+      </article>
+    </div>
+    <p class="serving">Based in Norwalk. Serving Norwalk, Sandusky, Huron, Willard &amp; surrounding areas.</p>
+  </section>
+
+  <section class="book" id="book" aria-labelledby="book-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="kicker"><span class="num">03</span> Request service</p>
+        <h2 id="book-title">Tell us what's going on.</h2>
+        <p>Three quick steps. We'll call you back to set a time. If it's urgent, just call <a class="num" href="tel:+14197061724">419-706-1724</a>.</p>
+      </div>
+
+      <form class="book-panel" id="booking-form" novalidate>
+        <div class="progress">
+          <div class="progress-row"><span>What's going on?</span><span><span class="num">1</span> of <span class="num">3</span></span></div>
+          <div class="progress-bar" role="progressbar" aria-label="Request progress" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1" aria-valuetext="Step 1 of 3"><span></span><span></span><span></span></div>
+        </div>
+
+        <fieldset>
+          <legend>What's going on?</legend>
+          <div class="choices">
+            <div class="choice">
+              <input type="radio" name="service" id="svc-heat" value="heating-repair">
+              <label for="svc-heat" style="--pos:0"><span><span class="name">Furnace &amp; Heating Repair</span><span class="hint">No heat, or not enough</span></span></label>
+            </div>
+            <div class="choice">
+              <input type="radio" name="service" id="svc-ac" value="ac-repair">
+              <label for="svc-ac" style="--pos:1"><span><span class="name">AC Repair</span><span class="hint">Not cooling, or not running</span></span></label>
+            </div>
+            <div class="choice">
+              <input type="radio" name="service" id="svc-install" value="installation">
+              <label for="svc-install" style="--pos:0.6"><span><span class="name">Installation &amp; Replacement</span><span class="hint">New furnace, AC, or both</span></span></label>
+            </div>
+            <div class="choice">
+              <input type="radio" name="service" id="svc-tune" value="maintenance">
+              <label for="svc-tune" style="--pos:0.4"><span><span class="name">Maintenance &amp; Tune-Up</span><span class="hint">Seasonal check</span></span></label>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="field">
+          <label for="details">Anything we should know? <span>(optional)</span></label>
+          <textarea id="details" name="details" rows="3" maxlength="500" placeholder="e.g. Furnace clicks on, then shuts off after a minute."></textarea>
+        </div>
+
+        <div class="form-foot">
+          <button class="btn btn-primary" type="submit" id="next-step">Next <span class="arrow" aria-hidden="true">&rarr;</span></button>
+          <p class="form-note" id="form-note" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer wrap" aria-labelledby="footer-title">
+  <div>
+    <h2 class="footer-mark" id="footer-title">Superior HVAC<span aria-hidden="true">.</span></h2>
+    <p class="legal" style="margin-top:12px">Heating &amp; cooling. Family-run in Northwest Ohio.</p>
+  </div>
+  <div class="footer-grid">
+    <div>
+      <h2>Reach us</h2>
+      <ul>
+        <li><a class="num" href="tel:+14197061724">419-706-1724</a></li>
+        <li><a href="mailto:superiorhvac90@gmail.com">superiorhvac90@gmail.com</a></li>
+        <li><a href="https://www.facebook.com/profile.php?id=61562683560654" rel="noopener">Facebook</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Serving</h2>
+      <p>Norwalk, Sandusky, Huron, Willard &amp; surrounding areas.</p>
+    </div>
+    <div>
+      <h2>The team</h2>
+      <p>Joey Ojeda, Owner/Operator<br>Ramon Negrete, Lead Installer</p>
+    </div>
+  </div>
+  <p class="legal">&copy; <span class="num">2026</span> Superior HVAC</p>
+</footer>
+
+<nav class="callbar" aria-label="Quick contact">
+  <a class="btn btn-ghost" href="tel:+14197061724">Call</a>
+  <a class="btn btn-primary" href="#book">Request Service</a>
+</nav>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Fallback for browsers without scroll-driven animations
+  if (!reduce && !(window.CSS && CSS.supports && CSS.supports('animation-timeline: scroll()'))) {
+    var ticking = false;
+    var update = function () {
+      var max = root.scrollHeight - window.innerHeight;
+      root.style.setProperty('--t', max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)).toFixed(3) : '0.5');
+      ticking = false;
+    };
+    window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    update();
+  }
+  // Service links preselect step 1
+  document.querySelectorAll('[data-pick]').forEach(function (a) {
+    a.addEventListener('click', function () {
+      var input = document.getElementById(a.getAttribute('data-pick'));
+      if (input) input.checked = true;
+    });
+  });
+  var form = document.getElementById('booking-form');
+  var note = document.getElementById('form-note');
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var picked = form.querySelector('input[name="service"]:checked');
+    if (!picked) {
+      note.textContent = 'Pick the one that sounds closest. We can sort out the rest on the phone.';
+      return;
+    }
+    var name = picked.nextElementSibling.querySelector('.name').textContent;
+    note.textContent = 'Got it: ' + name + '. Step 2 would ask when works for you.';
+  });
+})();
+</script>

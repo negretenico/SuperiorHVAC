@@ -1,0 +1,803 @@
+<title>Superior HVAC · Field Schematic</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* ==========================================================================
+   DESIGN TOKENS: Superior HVAC / Direction B "Field Schematic"
+   Layout concept: the homepage is one field service sheet; a copper supply run
+   leaves the furnace drawing in the hero and feeds each section like a duct branch.
+   ========================================================================== */
+:root {
+  /* color: light = ink on kraft */
+  --bg: #D2B88E;            /* kraft / manila ground */
+  --surface: #DDC7A0;       /* lighter sheet: forms, title blocks */
+  --fg: #1E1A14;            /* drafting ink */
+  --fg-muted: #4A3F30;      /* pencil, 5.4:1 on --bg */
+  --rule: #2A2219;          /* hairlines */
+  --rule-soft: rgba(42, 34, 25, .32);
+  --grid: rgba(60, 40, 15, .075);
+  --grid-major: rgba(60, 40, 15, .13);
+  --hatch: rgba(42, 34, 25, .16);
+  --signal: #A4471B;        /* refrigerant-line copper: lines, fills, buttons */
+  --signal-ink: #74290B;    /* copper as text, 5.3:1 on --bg */
+  --on-signal: #FBF3E4;     /* text on copper, 5.4:1 */
+  --focus: #74290B;
+  color-scheme: light;
+
+  /* type */
+  --font-sans: "Archivo", "Arial Narrow", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --w-condensed: 64%;       /* Archivo wdth axis */
+  --w-semi: 82%;
+  --w-normal: 100%;
+  --w-expanded: 125%;
+  --fs-display: clamp(3rem, 10vw + 1rem, 7.25rem);
+  --fs-h2: clamp(2.25rem, 6vw + .75rem, 4rem);
+  --fs-h3: clamp(1.375rem, 1.2vw + 1.1rem, 1.75rem);
+  --fs-body: 1.0625rem;
+  --fs-small: .9375rem;
+  --fs-label: .75rem;
+  --track-label: .08em;
+
+  /* layout */
+  --sheet-max: 1160px;
+  --grid-minor: 24px;
+  --grid-major-size: 120px;
+  --hair: 1px;
+  --radius: 2px;
+  --dock-h: 76px;
+  --rail: 12px;             /* inset of the copper supply run from the right edge */
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    /* blueprint at night: chalk on graphite */
+    --bg: #1A1C1E;
+    --surface: #222528;
+    --fg: #ECE6DA;
+    --fg-muted: #A8A196;
+    --rule: #CFC8BB;
+    --rule-soft: rgba(236, 230, 218, .26);
+    --grid: rgba(236, 230, 218, .035);
+    --grid-major: rgba(236, 230, 218, .07);
+    --hatch: rgba(236, 230, 218, .10);
+    --signal: #D9804A;
+    --signal-ink: #E89A68;
+    --on-signal: #1A1C1E;
+    --focus: #E89A68;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1A1C1E;
+  --surface: #222528;
+  --fg: #ECE6DA;
+  --fg-muted: #A8A196;
+  --rule: #CFC8BB;
+  --rule-soft: rgba(236, 230, 218, .26);
+  --grid: rgba(236, 230, 218, .035);
+  --grid-major: rgba(236, 230, 218, .07);
+  --hatch: rgba(236, 230, 218, .10);
+  --signal: #D9804A;
+  --signal-ink: #E89A68;
+  --on-signal: #1A1C1E;
+  --focus: #E89A68;
+  color-scheme: dark;
+}
+body { background: var(--bg); color: var(--fg) }
+
+/* ---------- base ---------- */
+*, *::before, *::after { box-sizing: border-box }
+body {
+  margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 calc(var(--dock-h) + env(safe-area-inset-bottom, 0px) + 24px);
+  font-family: var(--font-sans);
+  font-stretch: var(--w-normal);
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  overflow-x: hidden;
+  background-image:
+    linear-gradient(var(--grid-major) var(--hair), transparent var(--hair)),
+    linear-gradient(90deg, var(--grid-major) var(--hair), transparent var(--hair)),
+    linear-gradient(var(--grid) var(--hair), transparent var(--hair)),
+    linear-gradient(90deg, var(--grid) var(--hair), transparent var(--hair));
+  background-size:
+    var(--grid-major-size) var(--grid-major-size),
+    var(--grid-major-size) var(--grid-major-size),
+    var(--grid-minor) var(--grid-minor),
+    var(--grid-minor) var(--grid-minor);
+  background-position: center top;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+::selection { background: var(--signal); color: var(--on-signal) }
+a { color: inherit }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.sheet { max-width: var(--sheet-max); margin-inline: auto }
+
+.mono, .tag {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+.tag { color: var(--fg-muted); font-weight: 500 }
+.tag b { color: var(--signal-ink); font-weight: 600 }
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .6em;
+  min-height: 48px; padding: .7em 1.15em;
+  font-family: var(--font-sans); font-stretch: var(--w-semi); font-weight: 700;
+  font-size: 1.0625rem; letter-spacing: .01em; text-decoration: none;
+  border: 1.5px solid var(--rule); border-radius: var(--radius);
+  background: transparent; color: var(--fg); cursor: pointer;
+  transition: background-color .15s ease, color .15s ease, transform .15s ease;
+}
+.btn:hover { background: var(--surface) }
+.btn:active { transform: translateY(1px) }
+.btn-signal { background: var(--signal); border-color: var(--signal); color: var(--on-signal) }
+.btn-signal:hover { background: var(--signal-ink); border-color: var(--signal-ink); color: var(--on-signal) }
+.btn .arrow { font-family: var(--font-mono); font-weight: 500 }
+.btn .num { font-family: var(--font-mono); font-weight: 500; font-size: .9375rem; letter-spacing: .02em }
+
+/* ---------- header ---------- */
+.top {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding-block: 18px 14px;
+  border-bottom: var(--hair) solid var(--rule);
+}
+.wordmark {
+  display: inline-flex; align-items: stretch; gap: 8px;
+  text-decoration: none; color: var(--fg); line-height: 1;
+}
+.wordmark .w1 {
+  font-stretch: var(--w-expanded); font-weight: 800; font-size: 1.375rem;
+  letter-spacing: -.01em; align-self: center;
+}
+.wordmark .w2 {
+  font-family: var(--font-mono); font-weight: 600; font-size: .75rem; letter-spacing: .14em;
+  border: 1.5px solid var(--rule); padding: 4px 5px 3px; align-self: center;
+}
+.top-meta { text-align: right; color: var(--fg-muted) }
+.top-cta { display: none; align-items: center; gap: 18px }
+.top-cta .phone-txt { font-family: var(--font-mono); font-size: .9375rem; color: var(--fg); user-select: all }
+
+/* ---------- hero ---------- */
+.hero { padding-block: 28px 0; display: grid; gap: 28px }
+.hero-eyebrow { margin: 0 0 14px; display: flex; flex-wrap: wrap; gap: 4px 12px }
+h1 {
+  margin: 0;
+  font-stretch: var(--w-condensed); font-weight: 800;
+  font-size: var(--fs-display); line-height: .88; letter-spacing: -.005em;
+  text-transform: uppercase;
+}
+h1 .cool { color: var(--signal-ink) }
+.lede { margin: 20px 0 0; max-width: 34ch; font-size: 1.1875rem; line-height: 1.5 }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px }
+
+.titleblock {
+  margin: 28px 0 0; display: grid; grid-template-columns: 1fr 1fr;
+  border: 1.5px solid var(--rule); background: var(--surface);
+}
+.titleblock div { padding: 9px 11px 10px; border-right: var(--hair) solid var(--rule); border-bottom: var(--hair) solid var(--rule); min-width: 0 }
+.titleblock div:nth-child(2n) { border-right: 0 }
+.titleblock div:nth-last-child(-n+2) { border-bottom: 0 }
+.titleblock dt { font-family: var(--font-mono); font-size: .6875rem; letter-spacing: var(--track-label); text-transform: uppercase; color: var(--fg-muted) }
+.titleblock dd { margin: 2px 0 0; font-stretch: var(--w-semi); font-weight: 650; font-size: 1.0625rem; line-height: 1.25 }
+.titleblock dd.sel { font-family: var(--font-mono); font-weight: 500; font-size: .9375rem; user-select: all; font-stretch: normal }
+
+.fig { margin: 0; align-self: end }
+.fig-cap { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: var(--hair) dashed var(--rule-soft) }
+.schematic { display: block; width: 100%; height: auto; overflow: visible }
+
+/* drawing primitives (shared by hero + runs + glyphs) */
+.ln { fill: none; stroke: var(--rule); stroke-width: 1.25; stroke-linecap: square; stroke-linejoin: miter }
+.ln-thin { fill: none; stroke: var(--rule); stroke-width: .75 }
+.ln-soft { fill: none; stroke: var(--rule-soft); stroke-width: 1 }
+.ln-dash { fill: none; stroke: var(--rule); stroke-width: 1.25; stroke-dasharray: 4 3 }
+.hatch-fill { fill: var(--hatch); stroke: var(--rule); stroke-width: .75 }
+.paper { fill: var(--bg) }
+.flow { fill: none; stroke: var(--signal); stroke-width: 2.25; stroke-linecap: butt; stroke-linejoin: miter }
+.flow-pulse { fill: none; stroke: var(--bg); stroke-width: 1.2; stroke-dasharray: 3 9 }
+.arrowhead { fill: var(--signal) }
+.arrowhead-ink { fill: var(--rule) }
+.svg-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: .08em; fill: var(--fg-muted); text-transform: uppercase }
+.svg-label.strong { fill: var(--fg); font-weight: 600 }
+.svg-label.sig { fill: var(--signal-ink); font-weight: 600 }
+
+/* ---------- supply runs between sections ---------- */
+.run { display: block; height: 120px; margin-top: 0 }
+.run svg { display: block; width: 100%; height: 100%; overflow: visible }
+.run .node { fill: var(--bg); stroke: var(--signal); stroke-width: 1.5 }
+.run .rail { stroke-dasharray: 2 4 }
+
+/* ---------- section heads ---------- */
+.sec { padding-block: 0 8px }
+.sec-head { position: relative; padding-left: 0 }
+.eyebrow {
+  position: relative; display: inline-flex; align-items: center; gap: 10px; margin: 0 0 12px;
+  padding: 4px 10px 4px 0;
+}
+.eyebrow::before {
+  content: ""; width: 9px; height: 9px; flex: none; margin-left: 7px;
+  border: 1.5px solid var(--signal); background: var(--bg); transform: rotate(45deg);
+}
+h2 {
+  margin: 0; font-stretch: var(--w-condensed); font-weight: 800;
+  font-size: var(--fs-h2); line-height: .92; text-transform: uppercase; letter-spacing: -.005em;
+}
+.sec-intro { margin: 14px 0 0; max-width: 40ch; color: var(--fg-muted); font-size: var(--fs-body) }
+
+/* ---------- services: work-order rows ---------- */
+.orders { list-style: none; margin: 28px 0 0; padding: 0; border-top: 1.5px solid var(--rule) }
+.wo {
+  position: relative; display: grid; gap: 10px 16px;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: "code glyph" "body body" "note note" "act act";
+  padding-block: 22px 24px; border-bottom: var(--hair) solid var(--rule);
+}
+.wo-code { grid-area: code; align-self: end }
+.wo-glyph { grid-area: glyph; width: 64px; height: 48px; align-self: start }
+.wo-glyph svg { width: 100%; height: 100%; display: block; overflow: visible }
+.wo-body { grid-area: body }
+.wo h3 {
+  margin: 0; font-stretch: var(--w-semi); font-weight: 750; font-size: var(--fs-h3);
+  line-height: 1.1; letter-spacing: -.005em;
+}
+.wo p { margin: 8px 0 0; max-width: 46ch }
+.wo-note {
+  grid-area: note; position: relative; margin: 6px 0 0 26px; padding: 10px 12px 11px;
+  border: var(--hair) solid var(--rule-soft); background: var(--surface);
+  font-family: var(--font-mono); font-size: .8125rem; line-height: 1.5; color: var(--fg);
+}
+.wo-note::before { /* leader line */
+  content: ""; position: absolute; left: -22px; top: 50%; width: 22px; border-top: var(--hair) solid var(--rule);
+}
+.wo-note::after { /* leader dot */
+  content: ""; position: absolute; left: -25px; top: calc(50% - 3px); width: 6px; height: 6px;
+  border-radius: 50%; background: var(--rule);
+}
+.wo-note .k { display: block; color: var(--signal-ink); font-weight: 600; letter-spacing: var(--track-label); font-size: .6875rem; margin-bottom: 2px }
+.wo-act { grid-area: act }
+.wo-act a {
+  display: inline-flex; align-items: center; gap: .5em; min-height: 44px;
+  font-family: var(--font-mono); font-size: .8125rem; letter-spacing: .04em; text-transform: uppercase;
+  font-weight: 500; color: var(--signal-ink); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px;
+}
+.wo-act a:hover { text-decoration-thickness: 2px }
+.wo.major::before { /* hatched band marks the big-job row */
+  content: ""; position: absolute; inset: 0 auto 0 -16px; width: 8px;
+  background: repeating-linear-gradient(135deg, var(--hatch) 0 2px, transparent 2px 6px);
+  border-right: var(--hair) solid var(--rule-soft);
+}
+
+/* ---------- crew roster ---------- */
+.roster { margin: 28px 0 0; border: 1.5px solid var(--rule); background: var(--surface) }
+.roster-head {
+  display: flex; justify-content: space-between; gap: 12px; padding: 8px 12px;
+  border-bottom: 1.5px solid var(--rule);
+}
+.crew {
+  display: grid; grid-template-columns: 76px 1fr; gap: 4px 16px; align-items: start;
+  padding: 20px 14px 22px; border-bottom: var(--hair) solid var(--rule);
+}
+.crew:last-child { border-bottom: 0 }
+.stamp {
+  grid-row: span 3; width: 72px; height: 72px; position: relative;
+  color: var(--signal-ink); transform: rotate(-7deg);
+}
+.crew:nth-child(3) .stamp { transform: rotate(5deg) }
+.stamp svg { width: 100%; height: 100%; display: block; overflow: visible }
+.stamp .ring { fill: none; stroke: currentColor; stroke-width: 2 }
+.stamp .ring2 { fill: none; stroke: currentColor; stroke-width: .8 }
+.stamp .ini { font-family: var(--font-sans); font-stretch: 70%; font-weight: 800; font-size: 26px; fill: currentColor; letter-spacing: .02em }
+.stamp .arc { font-family: var(--font-mono); font-size: 6.4px; letter-spacing: .22em; fill: currentColor; text-transform: uppercase }
+.crew-name {
+  margin: 0; font-stretch: var(--w-expanded); font-weight: 750; font-size: 1.375rem; line-height: 1.1; letter-spacing: -.01em;
+}
+.crew-role { margin: 4px 0 0; color: var(--signal-ink); font-weight: 600 }
+.crew-line { margin: 10px 0 0; max-width: 44ch }
+.signoff { display: flex; align-items: end; gap: 10px; margin-top: 14px; color: var(--fg-muted) }
+.signoff svg { width: 120px; height: 30px; flex: none; overflow: visible }
+.signoff .sig { fill: none; stroke: var(--fg); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round }
+.signoff .base { stroke: var(--rule-soft); stroke-width: 1 }
+
+.area {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px;
+  margin: 22px 0 0; padding-top: 12px; border-top: var(--hair) dashed var(--rule-soft); color: var(--fg-muted);
+}
+.area span:last-child { font-family: var(--font-sans); text-transform: none; letter-spacing: 0; font-size: var(--fs-small); color: var(--fg) }
+
+/* ---------- booking: work order form, step 1 ---------- */
+.wo-form { margin: 28px 0 0; border: 1.5px solid var(--rule); background: var(--surface) }
+.form-head {
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px;
+  padding: 10px 12px; border-bottom: 1.5px solid var(--rule);
+}
+.progress { display: flex; gap: 4px; grid-column: 1 / -1 }
+.progress span { flex: 1; height: 6px; border: var(--hair) solid var(--rule) }
+.progress span.on { background: var(--signal); border-color: var(--signal) }
+.form-body { padding: 18px 12px 16px }
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0 }
+legend {
+  padding: 0; margin-bottom: 4px;
+  font-stretch: var(--w-condensed); font-weight: 800; font-size: clamp(2rem, 6vw + .5rem, 3rem);
+  line-height: .95; text-transform: uppercase;
+}
+.legend-sub { margin: 6px 0 14px; color: var(--fg-muted); font-size: var(--fs-small) }
+.choices { border-top: var(--hair) solid var(--rule) }
+.choice { position: relative; display: block; cursor: pointer }
+.choice input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer }
+.choice-box {
+  display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 14px;
+  min-height: 64px; padding: 10px 6px 10px 4px; border-bottom: var(--hair) solid var(--rule);
+  transition: background-color .15s ease;
+}
+.choice:hover .choice-box { background: var(--bg) }
+.tick { width: 26px; height: 26px; border: 1.5px solid var(--rule); position: relative; background: var(--bg) }
+.tick svg { position: absolute; inset: 2px; width: calc(100% - 4px); height: calc(100% - 4px); display: block; opacity: 0; transform: scale(.6); transition: opacity .12s ease, transform .18s ease }
+.tick path { fill: none; stroke: var(--signal); stroke-width: 3; stroke-linecap: round }
+.choice-name { font-stretch: var(--w-semi); font-weight: 700; font-size: 1.125rem; line-height: 1.2 }
+.choice-code { color: var(--fg-muted) }
+.choice input:checked + .choice-box { background: var(--bg) }
+.choice input:checked + .choice-box .tick { border-color: var(--signal) }
+.choice input:checked + .choice-box .tick svg { opacity: 1; transform: scale(1) }
+.choice input:checked + .choice-box .choice-code { color: var(--signal-ink) }
+.choice input:focus-visible + .choice-box { outline: 2px solid var(--focus); outline-offset: -2px }
+
+.field { margin-top: 22px }
+.field label { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px }
+.field label .opt { color: var(--fg-muted) }
+textarea {
+  display: block; width: 100%; min-height: 104px; resize: vertical; padding: 12px;
+  font: inherit; font-size: 1rem; line-height: 1.5; color: var(--fg);
+  background: var(--bg); border: 1.5px solid var(--rule); border-radius: var(--radius);
+  background-image: repeating-linear-gradient(transparent 0 23px, var(--rule-soft) 23px 24px);
+  background-position: 0 11px; background-attachment: local;
+}
+textarea::placeholder { color: var(--fg-muted); opacity: 1 }
+textarea:focus-visible { outline-offset: 1px }
+.form-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px }
+.form-foot .btn { min-width: 9.5rem }
+.status { margin: 12px 0 0; min-height: 1.4em; color: var(--signal-ink); font-family: var(--font-mono); font-size: .8125rem }
+
+/* ---------- footer ---------- */
+.foot { margin-top: 56px; border: 1.5px solid var(--rule); background: var(--surface) }
+.foot-grid { display: grid; grid-template-columns: 1fr }
+.foot-cell { padding: 12px 12px 14px; border-bottom: var(--hair) solid var(--rule); min-width: 0 }
+.foot-cell:last-child { border-bottom: 0 }
+.foot-cell dt { color: var(--fg-muted); margin-bottom: 3px }
+.foot-cell dd { margin: 0; overflow-wrap: anywhere }
+.foot-cell .sel { font-family: var(--font-mono); font-size: 1rem; user-select: all }
+.foot-cell a { text-underline-offset: 3px; display: inline-block; padding-block: 10px; margin-block: -10px }
+.foot-brand .wordmark .w1 { font-size: 1.625rem }
+.foot-brand p { margin: 8px 0 0; color: var(--fg-muted); font-size: var(--fs-small) }
+.foot-strip { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; padding: 8px 12px; border-top: 1.5px solid var(--rule); color: var(--fg-muted) }
+
+/* ---------- phone dock ---------- */
+.dock {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+  display: grid; grid-template-columns: 1fr 1.25fr; gap: 8px;
+  padding: 10px max(12px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
+  background: var(--bg); border-top: 1.5px solid var(--rule);
+}
+.dock .btn { width: 100%; min-height: 52px; padding-inline: .6em }
+
+/* ---------- motion: the one orchestrated moment ---------- */
+@keyframes draw { from { stroke-dashoffset: 1 } to { stroke-dashoffset: 0 } }
+@keyframes pulse { to { stroke-dashoffset: -24 } }
+@keyframes land { from { opacity: 0; transform: scale(.4) } to { opacity: 1; transform: none } }
+@media (prefers-reduced-motion: no-preference) {
+  .hero .draw { stroke-dasharray: 1; animation: draw 1.5s cubic-bezier(.55,.1,.3,1) .25s both }
+  .hero .draw.d2 { animation-duration: .6s; animation-delay: 1.35s }
+  .hero .draw.d3 { animation-duration: .6s; animation-delay: 1.55s }
+  .hero .arrowhead { transform-box: fill-box; transform-origin: center; animation: land .3s ease-out both }
+  .hero .a1 { animation-delay: .5s } .hero .a2 { animation-delay: 1.1s } .hero .a3 { animation-delay: 1.5s }
+  .hero .a4 { animation-delay: 1.9s } .hero .a5 { animation-delay: 2.1s }
+  .hero .flow-pulse { animation: pulse .9s linear 2s 6 }
+  @supports (animation-timeline: view()) {
+    .run .draw { stroke-dasharray: 1; animation: draw linear both; animation-timeline: view(); }
+    .run .s1 { animation-range: entry 0% entry 45% }
+    .run .s2 { animation-range: entry 40% entry 100% }
+    .run .s3 { animation-range: entry 95% cover 28% }
+  }
+  .wo-act a .arrow, .btn .arrow { display: inline-block; transition: transform .2s ease }
+  .wo-act a:hover .arrow, .btn:hover .arrow { transform: translateX(3px) }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important }
+}
+
+/* ---------- ≥ 768px ---------- */
+@media (min-width: 768px) {
+  body { padding-block: 0 48px; padding-left: max(32px, env(safe-area-inset-left, 0px)); padding-right: max(32px, env(safe-area-inset-right, 0px)) }
+  .dock { display: none }
+  .top { position: sticky; top: 0; z-index: 10; background: var(--bg); padding-block: 14px }
+  .top-meta { display: none }
+  .top-cta { display: flex }
+  .top-cta .btn { min-height: 44px; padding-block: .5em }
+  .hero { grid-template-columns: 1fr 1fr; gap: 40px; padding-top: 48px; align-items: end }
+  .hero-text { padding-bottom: 32px }
+  .run { height: 150px }
+  .wo {
+    grid-template-columns: 150px minmax(0, 1fr) 240px;
+    grid-template-areas: "code body note" "glyph body note" "glyph act note";
+    gap: 6px 32px; padding-block: 28px 26px;
+  }
+  .wo-code { align-self: start }
+  .wo-glyph { width: 84px; height: 62px; margin-top: 10px }
+  .wo-note { margin: 4px 0 0 30px; align-self: start }
+  .wo-note::before { left: -30px; width: 30px; top: 22px }
+  .wo-note::after { left: -33px; top: 19px }
+  .wo.major::before { left: -24px }
+  .roster-grid { display: grid; grid-template-columns: 1fr 1fr }
+  .crew { border-bottom: 0; padding: 24px 20px 26px }
+  .crew + .crew { border-left: var(--hair) solid var(--rule) }
+  .form-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); gap: 40px; align-items: start }
+  .form-wrap .wo-form { margin-top: 0 }
+  .form-body { padding: 22px 20px 20px }
+  .form-head { padding: 10px 20px }
+  .foot-grid { grid-template-columns: 1.4fr 1fr 1fr }
+  .foot-cell { border-right: var(--hair) solid var(--rule) }
+  .foot-cell:nth-child(3), .foot-cell:nth-child(5) { border-right: 0 }
+  .foot-cell:nth-child(4), .foot-cell:nth-child(5) { border-bottom: 0 }
+  .foot-brand { grid-row: span 2; border-bottom: 0 !important }
+  .foot-strip { padding: 8px 20px }
+}
+/* ---------- ≥ 1100px ---------- */
+@media (min-width: 1100px) {
+  .hero { grid-template-columns: 1.05fr 1fr; gap: 64px; padding-top: 64px }
+  .lede { font-size: 1.3125rem }
+  .wo { grid-template-columns: 190px minmax(0, 1fr) 300px; gap: 6px 48px }
+  .wo-note { margin-left: 40px }
+  .wo-note::before { left: -40px; width: 40px }
+  .wo-note::after { left: -43px }
+  .crew { grid-template-columns: 96px 1fr; padding: 28px 28px 30px }
+  .stamp { width: 88px; height: 88px }
+  .run { height: 170px }
+}
+</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<header class="top sheet">
+  <a class="wordmark" href="#top" aria-label="Superior HVAC, home">
+    <span class="w1">Superior</span><span class="w2">HVAC</span>
+  </a>
+  <p class="top-meta mono" style="margin:0">Field sheet<br>Heating &amp; cooling</p>
+  <div class="top-cta">
+    <span class="phone-txt">419-706-1724</span>
+    <a class="btn btn-signal" href="#book">Request Service <span class="arrow" aria-hidden="true">→</span></a>
+  </div>
+</header>
+
+<main id="top" class="sheet">
+
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-text">
+      <p class="hero-eyebrow mono tag"><span><b>DWG SH-01</b></span><span>Residential heating &amp; cooling</span></p>
+      <h1 id="hero-title">Warm in January. <span class="cool">Cool in July.</span></h1>
+      <p class="lede">We're a family-run heating and cooling crew. We fix it, tune it, or put in a new one, and we tell you straight what it needs.</p>
+      <div class="hero-actions">
+        <a class="btn btn-signal" href="#book">Request Service <span class="arrow" aria-hidden="true">→</span></a>
+        <a class="btn" href="tel:+14197061724">Call <span class="num">419-706-1724</span></a>
+      </div>
+      <dl class="titleblock">
+        <div><dt>Job</dt><dd>Your heat &amp; AC</dd></div>
+        <div><dt>Crew</dt><dd>Joey + Ramon</dd></div>
+        <div><dt>Home base</dt><dd>Norwalk, OH</dd></div>
+        <div><dt>Phone</dt><dd class="sel">419-706-1724</dd></div>
+      </dl>
+    </div>
+
+    <figure class="fig">
+      <figcaption class="fig-cap mono tag"><span>Fig. 1 · How air moves</span><span aria-hidden="true">NTS</span></figcaption>
+      <svg class="schematic" viewBox="0 0 360 252" role="img" aria-label="Line drawing of a furnace. Return air comes in through a filter, the blower pushes it across the cooling coil, and supply ducts carry it to the rooms.">
+        <!-- return grille + return duct -->
+        <rect class="hatch-fill" x="2" y="176" width="7" height="36"/>
+        <path class="ln" d="M9 180 H40 M9 208 H40"/>
+        <path class="ln-dash" d="M12 194 H33"/>
+        <path class="arrowhead-ink" d="M38 194 l-7 -4 v8 z"/>
+        <text class="svg-label" x="2" y="168">Return</text>
+        <!-- furnace / air handler -->
+        <rect class="ln" x="40" y="100" width="96" height="120"/>
+        <rect class="ln" x="52" y="70" width="72" height="30"/>
+        <polyline class="ln" points="50,144 88,114 126,144"/>
+        <path class="ln-thin" d="M58 138 L88 120 L118 138 M66 132 L88 126 L110 132"/>
+        <circle class="ln" cx="88" cy="182" r="20"/>
+        <circle class="ln-thin" cx="88" cy="182" r="5"/>
+        <path class="ln-thin" d="M88 177 V163 M93 182 H107 M88 187 V201 M83 182 H69 M91.5 178.5 L101 169 M91.5 185.5 L101 195 M84.5 185.5 L75 195 M84.5 178.5 L75 169"/>
+        <rect class="hatch-fill" x="41" y="179" width="8" height="30"/>
+        <!-- leaders -->
+        <path class="ln-thin" d="M118 136 L134 128 H196"/>
+        <circle class="arrowhead-ink" cx="118" cy="136" r="1.8"/>
+        <text class="svg-label" x="200" y="131">A-coil</text>
+        <path class="ln-thin" d="M104 192 L120 200 H196"/>
+        <circle class="arrowhead-ink" cx="104" cy="192" r="1.8"/>
+        <text class="svg-label" x="200" y="203">Blower</text>
+        <path class="ln-thin" d="M45 214 V236 H196"/>
+        <circle class="arrowhead-ink" cx="45" cy="214" r="1.8"/>
+        <text class="svg-label" x="200" y="239">Filter</text>
+        <!-- supply trunk walls -->
+        <path class="ln" d="M76 70 V22 H360 V252"/>
+        <path class="ln" d="M100 70 V42 H164 M182 42 H244 M262 42 H340 V252"/>
+        <path class="ln" d="M164 42 V64 M182 42 V64 M244 42 V64 M262 42 V64"/>
+        <rect class="ln" x="160" y="64" width="26" height="6"/>
+        <rect class="ln" x="240" y="64" width="26" height="6"/>
+        <path class="ln-thin" d="M166 64 v6 M171 64 v6 M176 64 v6 M181 64 v6 M246 64 v6 M251 64 v6 M256 64 v6 M261 64 v6"/>
+        <text class="svg-label strong" x="108" y="16">Supply</text>
+        <text class="svg-label" x="173" y="96" text-anchor="middle">Room 1</text>
+        <text class="svg-label" x="253" y="96" text-anchor="middle">Room 2</text>
+        <!-- copper airflow (the signature run) -->
+        <path class="flow draw" pathLength="1" d="M88 96 V32 H350 V252"/>
+        <path class="flow-pulse" d="M88 96 V32 H350 V252"/>
+        <path class="flow draw d2" pathLength="1" d="M173 33 V76"/>
+        <path class="flow draw d3" pathLength="1" d="M253 33 V76"/>
+        <path class="arrowhead a1" d="M88 50 l-4.5 8 h9 z"/>
+        <path class="arrowhead a2" d="M138 32 l-8 -4.5 v9 z"/>
+        <path class="arrowhead a3" d="M312 32 l-8 -4.5 v9 z"/>
+        <path class="arrowhead a4" d="M173 84 l-4.5 -8 h9 z M253 84 l-4.5 -8 h9 z"/>
+        <path class="arrowhead a5" d="M350 150 l-4.5 -8 h9 z"/>
+        <text class="svg-label sig" transform="translate(332 236) rotate(-90)">To services</text>
+      </svg>
+    </figure>
+  </section>
+
+  <!-- supply run A: hero to services -->
+  <div class="run" aria-hidden="true">
+    <svg><svg x="-12">
+      <line class="flow draw s1" pathLength="1" x1="100%" y1="0" x2="100%" y2="44"/>
+      <line class="ln-soft rail" x1="100%" y1="44" x2="100%" y2="100%"/>
+      <line class="flow draw s2" pathLength="1" x1="100%" y1="44" x2="24" y2="44"/>
+      <line class="flow draw s3" pathLength="1" x1="24" y1="44" x2="24" y2="100%"/>
+      <text class="svg-label" x="54%" y="35" text-anchor="middle">SR-02 · to work orders</text>
+      <svg x="44%" y="44"><path class="arrowhead" d="M-5 0 l9 -4.5 v9 z"/></svg>
+      <svg x="24" y="100%"><path class="arrowhead" d="M0 0 l-4.5 -9 h9 z"/></svg>
+    </svg></svg>
+  </div>
+
+  <section class="sec" id="services" aria-labelledby="svc-title">
+    <div class="sec-head">
+      <p class="eyebrow mono tag"><b>§ 02</b> Work orders</p>
+      <h2 id="svc-title">What we work on</h2>
+      <p class="sec-intro">Four kinds of calls. If yours doesn't fit one of them, call anyway and we'll sort it out.</p>
+    </div>
+
+    <ol class="orders">
+      <li class="wo" id="svc-01">
+        <p class="wo-code tag" style="margin:0"><b>SVC-01</b><br>Cooling</p>
+        <div class="wo-glyph" aria-hidden="true">
+          <svg viewBox="0 0 64 48"><rect class="ln" x="8" y="4" width="48" height="40"/><circle class="ln" cx="32" cy="24" r="14"/><path class="ln-thin" d="M32 24 L32 11 M32 24 L44 30 M32 24 L20 30"/><path class="ln-thin" d="M8 44 v3 M56 44 v3"/><circle class="arrowhead" cx="32" cy="24" r="2.5"/></svg>
+        </div>
+        <div class="wo-body">
+          <h3>AC Repair</h3>
+          <p>Warm air coming out of the vents, a unit that won't kick on, or water where it shouldn't be. We find the cause and fix that.</p>
+        </div>
+        <p class="wo-note"><span class="k">Call us if</span>Blowing warm / short cycling / ice on the lines</p>
+        <p class="wo-act" style="margin:0"><a href="#book" data-svc="ac">Request AC repair <span class="arrow" aria-hidden="true">→</span></a></p>
+      </li>
+
+      <li class="wo" id="svc-02">
+        <p class="wo-code tag" style="margin:0"><b>SVC-02</b><br>Heating</p>
+        <div class="wo-glyph" aria-hidden="true">
+          <svg viewBox="0 0 64 48"><path class="ln" d="M6 44 H58"/><path class="ln" d="M32 6 C 40 16, 46 22, 44 32 C 43 39, 37 43, 32 43 C 26 43, 20 39, 20 32 C 20 26, 24 22, 26 18 C 28 24, 30 26, 32 26 C 30 18, 30 12, 32 6 Z"/><path class="flow" d="M32 43 C 28 43, 26 39, 27 35 C 28 32, 31 31, 32 28 C 34 31, 37 33, 37 37 C 37 41, 35 43, 32 43 Z" style="stroke-width:1.5"/></svg>
+        </div>
+        <div class="wo-body">
+          <h3>Furnace &amp; Heating Repair</h3>
+          <p>No heat, a strange smell, or a furnace that keeps shutting itself off. We track down what's wrong and get you warm again.</p>
+        </div>
+        <p class="wo-note"><span class="k">Call us if</span>No heat / cold rooms / cycling on and off</p>
+        <p class="wo-act" style="margin:0"><a href="#book" data-svc="heat">Request heating repair <span class="arrow" aria-hidden="true">→</span></a></p>
+      </li>
+
+      <li class="wo major" id="svc-03">
+        <p class="wo-code tag" style="margin:0"><b>SVC-03</b><br>Install</p>
+        <div class="wo-glyph" aria-hidden="true">
+          <svg viewBox="0 0 64 48"><rect class="ln" x="18" y="12" width="28" height="32"/><path class="ln" d="M24 12 V4 H40 V12"/><path class="ln-thin" d="M6 12 V44 M3 12 H9 M3 44 H9"/><path class="ln-thin" d="M18 47 H46"/><path class="flow" d="M32 22 V34" style="stroke-width:1.5"/><path class="arrowhead" d="M32 20 l-3.5 6 h7 z"/></svg>
+        </div>
+        <div class="wo-body">
+          <h3>Installation &amp; Replacement</h3>
+          <p>When it's time for a new system, we size it for your house, put it in clean, and walk you through how it works before we go.</p>
+        </div>
+        <p class="wo-note"><span class="k">Straight answer</span>If a repair still makes more sense than a new unit, we'll tell you.</p>
+        <p class="wo-act" style="margin:0"><a href="#book" data-svc="install">Ask about a new system <span class="arrow" aria-hidden="true">→</span></a></p>
+      </li>
+
+      <li class="wo" id="svc-04">
+        <p class="wo-code tag" style="margin:0"><b>SVC-04</b><br>Maintenance</p>
+        <div class="wo-glyph" aria-hidden="true">
+          <svg viewBox="0 0 64 48"><path class="ln" d="M10 40 A22 22 0 0 1 54 40"/><path class="ln-thin" d="M14 28 l4 2 M22 21 l3 3.5 M32 18 v4.5 M42 21 l-3 3.5 M50 28 l-4 2"/><path class="ln" d="M6 40 H58"/><path class="flow" d="M32 40 L44 25" style="stroke-width:1.75"/><circle class="arrowhead" cx="32" cy="40" r="3"/></svg>
+        </div>
+        <div class="wo-body">
+          <h3>Maintenance &amp; Tune-Ups</h3>
+          <p>A check-up before the season turns. We clean it, test it, and catch the small stuff before it turns into a no-heat call.</p>
+        </div>
+        <p class="wo-note"><span class="k">Good timing</span>Spring for the AC / fall for the furnace</p>
+        <p class="wo-act" style="margin:0"><a href="#book" data-svc="tune">Book a tune-up <span class="arrow" aria-hidden="true">→</span></a></p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- supply run B: services to crew -->
+  <div class="run" aria-hidden="true">
+    <svg><svg x="-12">
+      <line class="ln-soft rail" x1="100%" y1="0" x2="100%" y2="100%"/>
+      <circle class="node" cx="100%" cy="30" r="4"/>
+      <line class="flow draw s2" pathLength="1" x1="100%" y1="30" x2="24" y2="30"/>
+      <line class="flow draw s3" pathLength="1" x1="24" y1="30" x2="24" y2="100%"/>
+      <text class="svg-label" x="54%" y="21" text-anchor="middle">SR-03 · to the crew</text>
+      <svg x="44%" y="30"><path class="arrowhead" d="M-5 0 l9 -4.5 v9 z"/></svg>
+      <svg x="24" y="100%"><path class="arrowhead" d="M0 0 l-4.5 -9 h9 z"/></svg>
+    </svg></svg>
+  </div>
+
+  <section class="sec" id="crew" aria-labelledby="crew-title">
+    <div class="sec-head">
+      <p class="eyebrow mono tag"><b>§ 03</b> Crew roster</p>
+      <h2 id="crew-title">Who shows up</h2>
+      <p class="sec-intro">We're a small, family-run outfit. You'll know us by name.</p>
+    </div>
+
+    <div class="roster">
+      <div class="roster-head mono tag"><span><b>Crew · 2</b></span><span>Signed off by</span></div>
+      <div class="roster-grid">
+        <article class="crew" aria-labelledby="joey-name">
+          <div class="stamp" aria-hidden="true">
+            <svg viewBox="0 0 72 72">
+              <circle class="ring" cx="36" cy="36" r="33"/>
+              <circle class="ring2" cx="36" cy="36" r="24"/>
+              <defs><path id="arc-j" d="M36 36 m-28.5 0 a28.5 28.5 0 1 1 57 0 a28.5 28.5 0 1 1 -57 0"/></defs>
+              <text class="arc"><textPath href="#arc-j">Superior HVAC · Owner · Superior HVAC · Owner ·</textPath></text>
+              <text class="ini" x="36" y="45.5" text-anchor="middle">JO</text>
+            </svg>
+          </div>
+          <h3 class="crew-name" id="joey-name">Joey Ojeda</h3>
+          <p class="crew-role tag">Owner / Operator</p>
+          <div>
+            <p class="crew-line">It's my company and my name on every job. I'd rather fix it right once than come back twice.</p>
+            <div class="signoff" aria-hidden="true">
+              <svg viewBox="0 0 120 30"><path class="sig" d="M4 20 C 8 6, 14 4, 13 14 C 12 22, 6 26, 9 21 C 13 15, 19 14, 21 18 C 23 22, 27 12, 29 17 C 31 22, 35 14, 38 16 C 41 18, 40 23, 45 19 C 52 13, 58 22, 66 17 C 72 13, 80 18, 96 14"/><line class="base" x1="0" y1="27" x2="120" y2="27"/></svg>
+            </div>
+          </div>
+        </article>
+        <article class="crew" aria-labelledby="ramon-name">
+          <div class="stamp" aria-hidden="true">
+            <svg viewBox="0 0 72 72">
+              <circle class="ring" cx="36" cy="36" r="33"/>
+              <circle class="ring2" cx="36" cy="36" r="24"/>
+              <defs><path id="arc-r" d="M36 36 m-28.5 0 a28.5 28.5 0 1 1 57 0 a28.5 28.5 0 1 1 -57 0"/></defs>
+              <text class="arc"><textPath href="#arc-r">Superior HVAC · Install · Superior HVAC · Install ·</textPath></text>
+              <text class="ini" x="36" y="45.5" text-anchor="middle">RN</text>
+            </svg>
+          </div>
+          <h3 class="crew-name" id="ramon-name">Ramon Negrete</h3>
+          <p class="crew-role tag">Lead Installer</p>
+          <div>
+            <p class="crew-line">Ramon runs our installs from start to finish. He takes his time, keeps it tidy, and shows you how your new system works.</p>
+            <div class="signoff" aria-hidden="true">
+              <svg viewBox="0 0 120 30"><path class="sig" d="M5 22 C 7 12, 9 6, 12 8 C 16 11, 8 16, 11 17 C 15 18, 17 24, 22 22 C 25 20, 24 15, 28 16 C 31 17, 29 22, 33 21 C 37 19, 36 14, 40 15 C 44 16, 42 22, 47 20 C 53 17, 58 13, 64 18 C 70 22, 82 15, 100 17"/><line class="base" x1="0" y1="27" x2="120" y2="27"/></svg>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <p class="area mono tag"><span>Service area</span><span>Norwalk, Sandusky, Huron, Willard &amp; surrounding areas</span></p>
+  </section>
+
+  <!-- supply run C: crew to booking -->
+  <div class="run" aria-hidden="true">
+    <svg><svg x="-12">
+      <line class="ln-soft rail" x1="100%" y1="0" x2="100%" y2="100%"/>
+      <circle class="node" cx="100%" cy="30" r="4"/>
+      <line class="flow draw s2" pathLength="1" x1="100%" y1="30" x2="24" y2="30"/>
+      <line class="flow draw s3" pathLength="1" x1="24" y1="30" x2="24" y2="100%"/>
+      <text class="svg-label" x="54%" y="21" text-anchor="middle">SR-04 · to your work order</text>
+      <svg x="44%" y="30"><path class="arrowhead" d="M-5 0 l9 -4.5 v9 z"/></svg>
+      <svg x="24" y="100%"><path class="arrowhead" d="M0 0 l-4.5 -9 h9 z"/></svg>
+    </svg></svg>
+  </div>
+
+  <section class="sec" id="book" aria-labelledby="book-title">
+    <div class="form-wrap">
+      <div class="sec-head">
+        <p class="eyebrow mono tag"><b>§ 04</b> Request service</p>
+        <h2 id="book-title">Start a work order</h2>
+        <p class="sec-intro">Three quick steps. We'll call you back to set a time. Rather talk now? Call <span class="mono" style="font-size:.9375rem;letter-spacing:.02em;user-select:all;color:var(--fg)">419-706-1724</span>.</p>
+      </div>
+
+      <form class="wo-form" id="book-form" action="#" novalidate>
+        <div class="form-head">
+          <span class="tag"><b>Work order</b> · New</span>
+          <span class="tag" id="step-label">Step 1 of 3</span>
+          <div class="progress" aria-hidden="true"><span class="on"></span><span></span><span></span></div>
+        </div>
+        <div class="form-body">
+          <fieldset aria-describedby="legend-sub">
+            <legend>What's going on?</legend>
+            <p class="legend-sub" id="legend-sub">Pick the closest one. You can explain below.</p>
+            <div class="choices">
+              <label class="choice">
+                <input type="radio" name="service" id="svc-opt-ac" value="ac-repair" data-label="AC repair">
+                <span class="choice-box"><span class="tick"><svg viewBox="0 0 20 20"><path d="M4 4 L16 16 M16 4 L4 16"/></svg></span><span class="choice-name">My AC isn't cooling</span><span class="choice-code tag">SVC-01</span></span>
+              </label>
+              <label class="choice">
+                <input type="radio" name="service" id="svc-opt-heat" value="heating-repair" data-label="Heating repair">
+                <span class="choice-box"><span class="tick"><svg viewBox="0 0 20 20"><path d="M4 4 L16 16 M16 4 L4 16"/></svg></span><span class="choice-name">My heat isn't working</span><span class="choice-code tag">SVC-02</span></span>
+              </label>
+              <label class="choice">
+                <input type="radio" name="service" id="svc-opt-install" value="installation" data-label="New system">
+                <span class="choice-box"><span class="tick"><svg viewBox="0 0 20 20"><path d="M4 4 L16 16 M16 4 L4 16"/></svg></span><span class="choice-name">I need a new system</span><span class="choice-code tag">SVC-03</span></span>
+              </label>
+              <label class="choice">
+                <input type="radio" name="service" id="svc-opt-tune" value="maintenance" data-label="Tune-up">
+                <span class="choice-box"><span class="tick"><svg viewBox="0 0 20 20"><path d="M4 4 L16 16 M16 4 L4 16"/></svg></span><span class="choice-name">Time for a tune-up</span><span class="choice-code tag">SVC-04</span></span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="field">
+            <label for="issue-notes"><span class="tag" style="color:var(--fg)">Tell us more</span><span class="opt tag">Optional</span></label>
+            <textarea id="issue-notes" name="notes" rows="4" maxlength="500" placeholder="Upstairs is warm, downstairs is fine."></textarea>
+          </div>
+
+          <div class="form-foot">
+            <span class="tag">Next: your home</span>
+            <button class="btn btn-signal" type="submit">Next <span class="arrow" aria-hidden="true">→</span></button>
+          </div>
+          <p class="status" id="form-status" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="foot sheet">
+  <dl class="foot-grid" style="margin:0">
+    <div class="foot-cell foot-brand">
+      <dt class="sr-only">Business</dt>
+      <dd>
+        <span class="wordmark"><span class="w1">Superior</span><span class="w2">HVAC</span></span>
+        <p>Heating &amp; cooling. Family-run in Northwest Ohio.</p>
+      </dd>
+    </div>
+    <div class="foot-cell"><dt class="tag">Phone</dt><dd><span class="sel">419-706-1724</span></dd></div>
+    <div class="foot-cell"><dt class="tag">Email</dt><dd><a href="mailto:superiorhvac90@gmail.com">superiorhvac90@gmail.com</a></dd></div>
+    <div class="foot-cell"><dt class="tag">Serving</dt><dd>Norwalk, Sandusky, Huron, Willard &amp; surrounding areas</dd></div>
+    <div class="foot-cell"><dt class="tag">Find us</dt><dd><a href="https://www.facebook.com/profile.php?id=61562683560654" rel="noopener">Facebook</a></dd></div>
+  </dl>
+  <div class="foot-strip mono tag"><span>Superior HVAC · Norwalk, OH</span><span>Sheet 1 of 1 · NTS</span></div>
+</footer>
+
+<nav class="dock" aria-label="Quick actions">
+  <a class="btn" href="tel:+14197061724">Call</a>
+  <a class="btn btn-signal" href="#book">Request Service</a>
+</nav>
+
+<script>
+(function () {
+  var form = document.getElementById('book-form');
+  var status = document.getElementById('form-status');
+  document.querySelectorAll('[data-svc]').forEach(function (a) {
+    a.addEventListener('click', function () {
+      var r = document.getElementById('svc-opt-' + a.getAttribute('data-svc'));
+      if (r) r.checked = true;
+    });
+  });
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var pick = form.querySelector('input[name="service"]:checked');
+    status.textContent = pick
+      ? 'Got it: ' + pick.getAttribute('data-label') + '. Step 2 of 3 comes next. (Preview only.)'
+      : 'Pick the closest one above to keep going.';
+  });
+})();
+</script>
