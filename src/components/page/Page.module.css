@@ -1,0 +1,62 @@
+/* Shared layout for inner pages (services, areas, privacy, 404). */
+.page { padding-block: 20px 56px; }
+
+.crumbs ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; font-size: var(--step--1); color: var(--fg-2); }
+.crumbs li { display: inline-flex; align-items: center; }
+.crumbs li + li::before { content: "/"; margin-inline: 8px; color: var(--line-strong); }
+.crumbs a { display: inline-flex; align-items: center; min-height: 44px; color: var(--fg); font-weight: 600; }
+
+.intro { padding-block: 20px 40px; border-bottom: 1px solid var(--line); }
+.side { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c, var(--fg-2)); }
+.title {
+  margin-top: 10px; font-size: var(--step-4); line-height: 1.02; letter-spacing: -0.03em;
+  font-variation-settings: "SOFT" 30, "WONK" 0; max-width: 16ch;
+}
+.lede { margin-top: 18px; font-size: var(--step-1); color: var(--fg-2); max-width: var(--measure); line-height: 1.5; }
+.note {
+  margin-top: 22px; max-width: var(--measure); padding: 14px 16px;
+  background: var(--tint, var(--surface)); border-left: 3px solid var(--c, var(--accent)); border-radius: var(--radius);
+  font-size: var(--step-0);
+}
+.note b { display: block; font-size: 0.6875rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--fg); margin-bottom: 2px; }
+.actions { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 12px; }
+
+.section { padding-block: 40px 0; }
+.steps { list-style: none; margin: 28px 0 0; padding: 0; display: grid; gap: 14px; counter-reset: step; }
+.steps li {
+  counter-increment: step;
+  display: grid; grid-template-columns: 40px 1fr; gap: 14px; align-items: start;
+  padding: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+}
+.steps li::before {
+  content: counter(step);
+  display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%;
+  border: 2px solid var(--accent); font-weight: 700; font-variant-numeric: tabular-nums;
+}
+.steps h3 { font-size: var(--step-1); line-height: 1.25; font-variation-settings: "SOFT" 30; }
+.steps p { margin-top: 4px; color: var(--fg-2); }
+
+.links { list-style: none; margin: 20px 0 0; padding: 0; display: grid; gap: 0; }
+.links li { border-top: 1px solid var(--line); }
+.links li:last-child { border-bottom: 1px solid var(--line); }
+.links a { display: grid; gap: 2px; padding-block: 14px; min-height: 44px; text-decoration: none; }
+.links a b { font-family: var(--font-display); font-weight: 400; font-size: var(--step-1); font-variation-settings: "SOFT" 30; }
+.links a span { color: var(--fg-2); font-size: var(--step--1); }
+.links a:hover b { text-decoration: underline; text-decoration-thickness: 1px; }
+
+.prose { max-width: 40rem; }
+.prose h2 { font-size: var(--step-2); line-height: 1.15; margin-top: 36px; font-variation-settings: "SOFT" 30; }
+.prose p, .prose ul { margin-top: 12px; }
+.prose ul { padding-left: 1.25rem; }
+.prose li { margin-top: 6px; }
+.prose a { font-weight: 600; }
+
+@media (min-width: 768px) {
+  .page { padding-block: 28px 80px; }
+  .intro { padding-block: 36px 56px; }
+  .section { padding-block: 56px 0; }
+  .steps { grid-template-columns: repeat(3, 1fr); }
+  .steps li { grid-template-columns: 1fr; }
+  .links { grid-template-columns: 1fr 1fr; column-gap: 32px; }
+  .links li:nth-last-child(2):nth-child(odd) { border-bottom: 1px solid var(--line); }
+}

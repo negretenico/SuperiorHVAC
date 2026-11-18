@@ -1,0 +1,39 @@
+.team { padding-block: 40px 56px; }
+.aside {
+  margin-top: 12px; font-family: var(--font-display); font-style: italic; font-size: var(--step-1);
+  color: var(--fg-2); font-variation-settings: "SOFT" 100, "WONK" 1;
+}
+.people { margin-top: 32px; display: grid; gap: 28px; }
+.person { display: grid; grid-template-columns: 112px 1fr; gap: 18px; align-items: start; }
+.ember { --c: var(--ember); --tint: var(--ember-tint); }
+.ice { --c: var(--ice); --tint: var(--ice-tint); }
+.swatch {
+  aspect-ratio: 4 / 5; border-radius: var(--radius);
+  display: grid; place-items: end start; padding: 10px 12px; position: relative; overflow: hidden;
+  background: var(--tint); color: var(--c);
+}
+.swatch b {
+  font-family: var(--font-display); font-weight: 400; font-size: 3.4rem; line-height: 0.85; letter-spacing: -0.04em;
+  font-variation-settings: "SOFT" 100, "WONK" 1; font-style: italic;
+  text-shadow: 0 0 calc(var(--glow) * 18px) color-mix(in oklch, var(--c) 55%, transparent);
+}
+.swatch::before {
+  content: ""; position: absolute; top: 12px; left: 12px; right: 12px; height: 1px; background: currentColor; opacity: .45;
+}
+.person h3 { font-size: var(--step-2); line-height: 1.1; font-variation-settings: "SOFT" 20; }
+.role { margin-top: 6px; font-size: var(--step--1); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--c); }
+.line { margin-top: 10px; color: var(--fg-2); }
+
+.serving {
+  margin-top: 40px; padding-top: 18px; border-top: 1px dashed var(--line-strong);
+  font-size: var(--step--1); color: var(--fg-2); display: flex; gap: 10px; align-items: baseline;
+}
+.serving::before { content: "\25CF"; color: var(--accent); font-size: 0.6rem; }
+.serving a { color: var(--fg); display: inline-block; padding-block: 12px; }
+
+@media (min-width: 768px) {
+  .team { padding-block: 64px 80px; }
+  .people { grid-template-columns: 1fr 1fr; gap: 40px; }
+  .person { grid-template-columns: 160px 1fr; gap: 24px; }
+  .swatch b { font-size: 4.75rem; }
+}

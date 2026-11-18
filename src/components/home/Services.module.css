@@ -1,0 +1,46 @@
+.services { padding-block: 40px 56px; }
+
+.spectrum { list-style: none; margin: 36px 0 0; padding: 0 0 0 34px; position: relative; display: grid; gap: 0; }
+.spectrum::before {
+  content: ""; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 3px; border-radius: 3px;
+  background: linear-gradient(to bottom, var(--ember), color-mix(in oklch, var(--ember), var(--ice)) 50%, var(--ice));
+  box-shadow: 0 0 calc(var(--glow) * 14px) color-mix(in oklch, var(--accent) 40%, transparent);
+}
+.stop {
+  --c: color-mix(in oklch, var(--ember) calc((1 - var(--pos)) * 100%), var(--ice));
+  position: relative; padding-block: 22px 26px; border-top: 1px solid var(--line);
+}
+.stop:last-child { border-bottom: 1px solid var(--line); }
+.stop::before {
+  content: ""; position: absolute; left: -34px; top: 30px; width: 17px; height: 17px; border-radius: 50%;
+  background: var(--bg); border: 3px solid var(--c);
+  box-shadow: 0 0 calc(var(--glow) * 12px) color-mix(in oklch, var(--c) 60%, transparent);
+}
+.side { display: flex; align-items: center; gap: 10px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c); }
+.stop h3 { font-size: var(--step-2); line-height: 1.12; margin-top: 8px; font-variation-settings: "SOFT" 20; }
+.stop h3 a { text-decoration-color: var(--line-strong); }
+.stop h3 a:hover { text-decoration-color: var(--c); }
+.stop p { margin-top: 10px; color: var(--fg-2); max-width: 30rem; }
+.stop p.note { margin-top: 12px; color: var(--fg); font-size: var(--step--1); line-height: 1.5; }
+.note b { display: block; font-size: 0.6875rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--c); margin-bottom: 2px; }
+.link {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 8px;
+  font-weight: 600; text-decoration: none; color: var(--fg);
+  border-bottom: 1px solid var(--c); padding-top: 6px;
+}
+.link:hover { color: var(--c); }
+
+@media (min-width: 768px) {
+  .services { padding-block: 64px 80px; }
+}
+/* ≥ 1100: the scale turns horizontal */
+@media (min-width: 1100px) {
+  .spectrum { padding: 46px 0 0; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 32px; }
+  .spectrum::before {
+    left: 0; right: 0; top: 7px; bottom: auto; width: auto; height: 3px;
+    background: linear-gradient(to right, var(--ember), color-mix(in oklch, var(--ember), var(--ice)) 50%, var(--ice));
+  }
+  .stop, .stop:last-child { border: 0; padding-block: 0; display: flex; flex-direction: column; align-items: flex-start; }
+  .stop::before { left: 0; top: -46px; }
+  .link { margin-top: auto; padding-top: 18px; }
+}

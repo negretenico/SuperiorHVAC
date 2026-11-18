@@ -1,0 +1,36 @@
+.header {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding-block: 18px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.wordmark {
+  display: inline-flex; align-items: baseline; gap: 7px;
+  text-decoration: none; min-height: 44px;
+}
+.wordmark b {
+  font-family: var(--font-display); font-weight: 500; font-size: 1.5rem; letter-spacing: -0.02em;
+  font-variation-settings: "SOFT" 40, "WONK" 1;
+}
+.wordmark span {
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.16em; color: var(--fg-2);
+  padding-top: 4px;
+}
+.wordmark i {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--accent); align-self: flex-start; margin-top: 12px;
+  box-shadow: 0 0 calc(var(--glow) * 10px) var(--accent);
+}
+.logo { display: block; height: 40px; width: auto; align-self: center; }
+
+/* phone layout: the CallBar carries the CTAs */
+.cta { display: none; align-items: center; gap: 20px; }
+.phone {
+  display: inline-flex; flex-direction: column; justify-content: center; min-height: 44px;
+  font-weight: 600; text-decoration: none; order: 1;
+}
+.tag { font-size: var(--step--1); color: var(--fg-2); order: 0; }
+.cta :global(.btn) { order: 2; }
+
+@media (min-width: 768px) {
+  .header { padding-block: 22px 18px; }
+  .cta { display: flex; }
+}
