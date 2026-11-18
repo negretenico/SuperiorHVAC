@@ -1,0 +1,239 @@
+/* Booking flow. Mirrors the Thermostat prototype's .book-panel / .progress / .choice styles,
+   built only from the global tokens in src/app/globals.css. */
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px 18px 24px;
+  box-shadow: 0 0 calc(var(--glow) * 40px) color-mix(in oklch, var(--accent) 10%, transparent);
+  min-width: 0;
+}
+@media (max-width: 380px) {
+  .panel { padding-inline: 14px; }
+}
+
+/* ---------- progress ---------- */
+.progress { display: grid; gap: 10px; }
+.progressRow {
+  margin: 0;
+  font-size: var(--step--1);
+  font-weight: 600;
+  color: var(--fg-2);
+}
+.progressRow :global(.num) { color: var(--fg); }
+.progressBar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.progressBar span { height: 4px; border-radius: 2px; background: var(--line); transition: background-color 0.2s; }
+.progressBar span[data-on] {
+  background: var(--accent);
+  box-shadow: 0 0 calc(var(--glow) * 8px) var(--accent);
+}
+
+/* ---------- headings ---------- */
+.stepTitle {
+  margin: 20px 0 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--step-2);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  font-variation-settings: "SOFT" 30;
+  scroll-margin-top: 96px;
+}
+.stepTitle:focus { outline: none; }
+.stepTitle:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+/* ---------- groups + choice cards ---------- */
+.group { border: 0; margin: 16px 0 0; padding: 0; min-width: 0; }
+.legend { padding: 0; font-weight: 600; color: var(--fg-2); font-size: var(--step--1); }
+
+.choices { margin-top: 12px; display: grid; gap: 10px; }
+.choice, .chip { position: relative; }
+.choice input, .chip input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+}
+.choice label {
+  --c: color-mix(in oklch, var(--ember) calc((1 - var(--pos, 0.5)) * 100%), var(--ice));
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  align-items: center;
+  gap: 14px;
+  min-height: 64px;
+  padding: 12px 16px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--c);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.choice label:hover { border-color: var(--line-strong); border-left-color: var(--c); }
+.choice label::before {
+  content: "";
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--line-strong);
+  background: var(--bg);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.choice input:checked + label {
+  border-color: var(--c);
+  background: color-mix(in oklch, var(--c) 9%, var(--bg));
+}
+.choice input:checked + label::before {
+  border-color: var(--c);
+  box-shadow: inset 0 0 0 4px var(--bg), inset 0 0 0 11px var(--c);
+}
+.choice input:focus-visible + label,
+.chip input:focus-visible + label { outline: 2px solid var(--focus); outline-offset: 3px; }
+.choice input[aria-invalid] + label,
+.chip input[aria-invalid] + label { border-color: var(--ember); }
+
+.choiceName { display: block; font-weight: 600; font-size: var(--step-0); line-height: 1.25; }
+.choiceHint { display: block; font-size: var(--step--1); color: var(--fg-2); }
+
+/* time chips: same card language, compact 2×2 grid */
+.chips { margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.chip label {
+  display: grid;
+  align-content: center;
+  min-height: 64px;
+  padding: 10px 14px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.chip label:hover { border-color: var(--line-strong); }
+.chip input:checked + label {
+  border-color: var(--accent);
+  background: color-mix(in oklch, var(--accent) 10%, var(--bg));
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+/* ---------- text fields ---------- */
+.field { margin-top: 20px; display: grid; gap: 6px; min-width: 0; }
+.field > label { font-weight: 600; }
+.optional { font-weight: 400; color: var(--fg-2); }
+.input,
+.textarea {
+  font: inherit;
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  min-height: 48px;
+  width: 100%;
+  min-width: 0;
+}
+.textarea { min-height: 104px; resize: vertical; }
+.textarea::placeholder { color: var(--fg-2); }
+.input:focus-visible,
+.textarea:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.input[aria-invalid],
+.textarea[aria-invalid] { border-color: var(--ember); border-width: 2px; }
+
+.hint { margin: 0; font-size: var(--step--1); color: var(--fg-2); }
+.error {
+  margin: 0;
+  font-size: var(--step--1);
+  font-weight: 600;
+  color: var(--ember);
+}
+.error::before { content: "! "; }
+
+/* ---------- error summary / banners ---------- */
+.summary {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border: 2px solid var(--ember);
+  border-radius: var(--radius);
+  background: var(--ember-tint);
+  color: var(--fg);
+}
+.summary p { margin: 0; }
+.summary ul { margin: 8px 0 0; padding-left: 1.2em; }
+.summary li + li { margin-top: 4px; }
+.summary a { color: inherit; font-weight: 600; }
+.summaryTitle { font-weight: 600; }
+.summary:focus { outline: none; }
+.summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+/* ---------- honeypot ---------- */
+.honeypot {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* ---------- turnstile ---------- */
+.turnstile { display: grid; gap: 8px; min-width: 0; max-width: 100%; }
+.turnstileBox { min-height: 65px; max-width: 100%; }
+.turnstileBox:focus { outline: none; }
+
+/* ---------- footer + buttons ---------- */
+.foot {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 22px;
+  font: 600 var(--step-0) / 1 var(--font-body);
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, transform 0.15s;
+}
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn:disabled { cursor: progress; opacity: 0.7; }
+.btnPrimary {
+  flex: 1 1 auto;
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow: 0 0 calc(var(--glow) * 22px) color-mix(in oklch, var(--accent) 45%, transparent);
+}
+.btnGhost {
+  flex: 0 0 auto;
+  background: transparent;
+  color: var(--fg);
+  border-color: var(--line-strong);
+}
+.btnGhost:hover:not(:disabled) { border-color: var(--fg); }
+.arrow { font-family: var(--font-display); font-size: 1.15em; line-height: 0; }
+.note { margin: 0; flex-basis: 100%; min-height: 1.4em; font-size: var(--step--1); color: var(--fg-2); }
+.note:empty { min-height: 0; }
+
+/* ---------- confirmation ---------- */
+.done { display: grid; gap: 12px; }
+.done .stepTitle { margin-top: 0; }
+.doneLead { margin: 0; font-size: var(--step-1); }
+
+@media (min-width: 720px) {
+  .panel { padding: 32px; }
+  .choices { grid-template-columns: 1fr 1fr; }
+  .chips { grid-template-columns: repeat(4, 1fr); }
+  .btnPrimary { flex: 0 0 auto; min-width: 200px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel *, .panel *::before, .panel *::after { transition: none !important; }
+  .btn:active:not(:disabled) { transform: none; }
+}

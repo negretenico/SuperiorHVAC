@@ -1,0 +1,23 @@
+.main {
+  max-width: 44rem;
+  margin-inline: auto;
+  padding: 32px max(16px, env(safe-area-inset-right, 0px)) 56px max(16px, env(safe-area-inset-left, 0px));
+  min-width: 0;
+}
+.intro { display: grid; gap: 10px; margin-bottom: 24px; }
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--step-3);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  font-variation-settings: "SOFT" 40;
+}
+.lead { margin: 0; max-width: var(--measure); color: var(--fg-2); font-size: var(--step-1); }
+.call { margin: 0; font-weight: 600; }
+.call a { display: inline-block; padding-block: 10px; color: inherit; }
+
+@media (min-width: 720px) {
+  .main { padding-block: 56px 80px; }
+}
