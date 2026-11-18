@@ -68,8 +68,80 @@ export type ValidationResult =
  * - turnstileToken: non-empty string
  * - company (honeypot): any non-empty value sets honeypotTripped = true (not an error)
  */
-export function validateBooking(_body: unknown): ValidationResult {
-  throw new Error("not implemented: validateBooking");
+export function validateBooking(body: unknown): ValidationResult {
+  const b: Record<string, unknown> =
+    typeof body === "object" && body !== null && !Array.isArray(body) ? (body as Record<string, unknown>) : {};
+  const errors: Partial<Record<BookingField, string>> = {};
+
+  const service = str(b.service);
+  if (!SERVICE_SLUGS.includes(service)) errors.service = "Please choose the kind of service you need.";
+
+  const details = optionalStr(b.details);
+  if (details === null) errors.details = "Please describe the problem in plain text.";
+  else if (details.length > LIMITS.detailsMax)
+    errors.details = `Please keep the description under ${LIMITS.detailsMax} characters.`;
+
+  const timeWindow = str(b.timeWindow);
+  if (!isTimeWindow(timeWindow)) errors.timeWindow = "Please pick a time that works for you.";
+
+  const name = str(b.name);
+  if (name.length < LIMITS.nameMin) errors.name = "Please enter your name so we know who to ask for.";
+  else if (name.length > LIMITS.nameMax) errors.name = `Please keep your name under ${LIMITS.nameMax} characters.`;
+
+  const phone = normalizeUsPhone(str(b.phone));
+  if (phone === null) errors.phone = "Please enter a 10-digit US phone number, like 419-555-0142.";
+
+  const email = str(b.email).toLowerCase();
+  if (email.length > LIMITS.emailMax || !EMAIL_RE.test(email))
+    errors.email = "Please enter a valid email address, like name@example.com.";
+
+  const street = optionalStr(b.street);
+  if (street === null) errors.street = "Please enter your street address as plain text.";
+  else if (street.length > LIMITS.streetMax)
+    errors.street = `Please keep the street address under ${LIMITS.streetMax} characters.`;
+
+  const zipMatch = /^(\d{5})(?:-\d{4})?$/.exec(str(b.zip));
+  if (!zipMatch) errors.zip = "Please enter your 5-digit ZIP code.";
+
+  const turnstileToken = str(b.turnstileToken);
+  if (!turnstileToken) errors.turnstileToken = "Please complete the quick check that you're not a robot.";
+
+  if (Object.keys(errors).length > 0 || phone === null || !zipMatch || details === null || street === null || !isTimeWindow(timeWindow)) {
+    return { ok: false, errors };
+  }
+  return {
+    ok: true,
+    data: { service, details, timeWindow, name, phone, email, street, zip: zipMatch[1]! },
+    turnstileToken,
+    honeypotTripped: b.company !== undefined && b.company !== null && b.company !== "",
+  };
+}
+
+const EMAIL_RE = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/;
+
+/** Trimmed string, or "" for anything that is not a string. */
+function str(v: unknown): string {
+  return typeof v === "string" ? v.trim() : "";
+}
+
+/** Optional string field: "" when missing, trimmed when a string, null when some other type. */
+function optionalStr(v: unknown): string | null {
+  if (v === undefined || v === null) return "";
+  return typeof v === "string" ? v.trim() : null;
+}
+
+function isTimeWindow(v: string): v is TimeWindow {
+  return (TIME_WINDOWS as readonly string[]).includes(v);
+}
+
+/** US (NANP) number → E.164, or null. Allows digits, spaces, dots, dashes, parens, one leading "+". */
+function normalizeUsPhone(raw: string): string | null {
+  if (!/^\+?[\d\s().-]+$/.test(raw)) return null;
+  let digits = raw.replace(/\D/g, "");
+  if (digits.length === 11 && digits.startsWith("1")) digits = digits.slice(1);
+  else if (raw.startsWith("+")) return null; // "+" must be followed by the US country code
+  if (!/^[2-9]\d{2}[2-9]\d{6}$/.test(digits)) return null;
+  return `+1${digits}`;
 }
 
 /** Response shapes from POST /api/booking. */
