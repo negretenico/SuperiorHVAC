@@ -11,6 +11,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:build": "node --experimental-strip-types --no-warnings scripts/check-build-output.mts",
     "db:init": "npm run db:init:local && npm run db:init:remote",
     "db:init:local": "wrangler d1 migrations apply superior-hvac --local",
     "db:init:remote": "wrangler d1 migrations apply superior-hvac --remote",
