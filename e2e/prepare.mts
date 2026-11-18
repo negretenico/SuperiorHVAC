@@ -21,7 +21,7 @@ function run(cmd: string, env: NodeJS.ProcessEnv = process.env): void {
 const hasMigrations = existsSync("db/migrations") && readdirSync("db/migrations").some((f) => f.endsWith(".sql"));
 if (hasMigrations) {
   // CI=1 keeps wrangler from asking for confirmation.
-  run("npx wrangler d1 migrations apply superior-hvac --local", { ...process.env, CI: "1" });
+  run("npx wrangler d1 migrations apply superior-hvac --local --env e2e", { ...process.env, CI: "1" });
 } else {
   console.warn("[e2e:prepare] no db/migrations/*.sql yet; skipping local D1 migrations.");
 }

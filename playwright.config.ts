@@ -30,7 +30,7 @@ export default defineConfig({
   webServer: process.env.E2E_BASE_URL
     ? undefined
     : {
-        command: `node --experimental-strip-types --no-warnings e2e/prepare.mts && npx wrangler dev --port ${PORT} --env-file .dev.vars.e2e`,
+        command: `node --experimental-strip-types --no-warnings e2e/prepare.mts && npx wrangler dev --env e2e --port ${PORT} --env-file .dev.vars.e2e`,
         url: `${baseURL}/api/health`,
         reuseExistingServer: !process.env.CI,
         // First run may include `next build`.

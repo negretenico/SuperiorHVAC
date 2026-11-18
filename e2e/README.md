@@ -88,3 +88,13 @@ booking form (or `POST /api/booking`). Expect `403 {"ok":false,"error":"turnstil
 `POST /api/booking` is limited to 3 requests per 60 s per IP (`[[ratelimits]]` in `wrangler.toml`).
 All local tests share one IP, so keep booking submissions in e2e to a minimum: `api.spec.ts` sends
 two and runs in a single project. If you see 429s, wait a minute or restart `wrangler dev`.
+
+## Lighthouse on a slow machine
+
+`npm run lighthouse` uses Lighthouse's default 4× CPU slowdown, calibrated for fast desktops (benchmarkIndex ≥ ~1000).
+On a slower laptop (check `environment.benchmarkIndex` in a report) that simulates a much slower phone than intended and
+performance scores come out 0.2–0.3 low. For a calibrated local check:
+
+    npx lhci collect --staticDistDir=./out --url=http://localhost/ --settings.throttling.cpuSlowdownMultiplier=1.6
+
+CI keeps the default settings; the CI run is the gate.

@@ -34,3 +34,33 @@ enabled = true
 
 [vars]
 NOTIFIER = "resend"
+
+# ---------------------------------------------------------------------------
+# e2e: local test runs only (`wrangler dev --env e2e`, started by Playwright).
+# Same bindings as production, but a high rate limit so the test suite's real
+# submits across devices don't trip the 3/min production limit. Never deployed.
+[env.e2e]
+name = "superior-hvac-e2e"
+
+[env.e2e.assets]
+directory = "./out"
+binding = "ASSETS"
+not_found_handling = "404-page"
+html_handling = "auto-trailing-slash"
+run_worker_first = ["/api/*"]
+
+[[env.e2e.d1_databases]]
+binding = "DB"
+database_name = "superior-hvac"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "db/migrations"
+
+[[env.e2e.ratelimits]]
+name = "BOOKING_RATE_LIMITER"
+namespace_id = "1002"
+  [env.e2e.ratelimits.simple]
+  limit = 1000
+  period = 60
+
+[env.e2e.vars]
+NOTIFIER = "log"

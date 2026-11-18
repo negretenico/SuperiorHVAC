@@ -11,14 +11,19 @@ export function Header() {
   const { main, tag } = wordmarkParts(business.name);
   return (
     <header className={`${styles.header} wrap`}>
-      <Link className={styles.wordmark} href="/" aria-label={`${business.name}, home`}>
+      <Link className={styles.wordmark} href="/">
         {logo ? (
           // eslint-disable-next-line @next/next/no-img-element -- static export, unoptimized images
-          <img className={styles.logo} src={logo} alt="" height={40} />
+          <img className={styles.logo} src={logo} alt={business.name} height={40} />
         ) : (
           <>
             <b>{main}</b>
-            {tag ? <span>{tag}</span> : null}
+            {tag ? (
+              <>
+                {" "}
+                <span>{tag}</span>
+              </>
+            ) : null}
             <i aria-hidden="true" />
           </>
         )}
