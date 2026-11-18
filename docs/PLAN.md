@@ -50,4 +50,9 @@ Three prototypes in `design/prototypes/` (brief: `design/prototype-brief.md`):
 - A Thermostat: https://claude.ai/artifact/Hjio6xk415WeDbjoHP6s2J
 - B Field Schematic: https://claude.ai/artifact/WJpiqNq17EGPuoeDfw4akk
 - C Neighborhood Editorial: https://claude.ai/artifact/UDBak72qxFGFsQXUxUU32i
-Chosen direction: _pending_.
+Chosen direction (2026-11-17): **A Thermostat** as the base, with:
+- No "Call Joey" label anywhere.
+- Family-run warmth from C: "Family-run / Norwalk-based / We answer the phone" badges, "No call center. No mystery tech. Just us."
+- Service descriptions + "Call us if" / labelled notes from B (now in business.ts services[].summary/symptoms/note).
+- Every phone number is an `<a href="tel:+14197061724">` link (enforced by e2e crawl).
+Reference: design/prototypes/thermostat/index.html (v2).

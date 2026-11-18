@@ -46,8 +46,10 @@ export interface Service {
   summary: string;
   /** "heat" | "cool" | "both": lets designs place services on a warm/cool axis. */
   climate: "heat" | "cool" | "both";
-  /** Common symptoms, used in copy and booking hints. */
+  /** Common symptoms, shown as a "Call us if" note and used in booking hints. */
   symptoms: string[];
+  /** Optional labelled note shown instead of symptoms, e.g. { label: "Good timing", ... }. */
+  note?: { label: string; text: string };
 }
 
 export interface ServiceArea {
@@ -119,28 +121,30 @@ export const business: Business = {
     {
       slug: "ac-repair",
       name: "AC Repair",
-      summary: "Warm air from the vents, a unit that won't start, or ice on the lines. We find the cause and fix it.",
+      summary: "Warm air coming out of the vents, a unit that won't kick on, or water where it shouldn't be. We find the cause and fix that.",
       climate: "cool",
-      symptoms: ["Blowing warm air", "Won't turn on", "Ice on the lines", "Water leaking"],
+      symptoms: ["Blowing warm", "Short cycling", "Ice on the lines"],
     },
     {
       slug: "furnace-heating-repair",
       name: "Furnace & Heating Repair",
-      summary: "No heat, short cycling, or a strange smell when it kicks on. We get the house warm again.",
+      summary: "No heat, a strange smell, or a furnace that keeps shutting itself off. We track down what's wrong and get you warm again.",
       climate: "heat",
-      symptoms: ["No heat", "Short cycling", "Strange smell or noise", "Cold rooms"],
+      symptoms: ["No heat", "Cold rooms", "Cycling on and off"],
     },
     {
       slug: "hvac-installation-replacement",
       name: "HVAC Installation & Replacement",
-      summary: "New furnace or AC sized to your house and put in right. If a repair makes more sense, we'll tell you.",
+      summary: "When it's time for a new system, we size it for your house, put it in clean, and walk you through how it works before we go.",
+      note: { label: "Straight answer", text: "If a repair still makes more sense than a new unit, we'll tell you." },
       climate: "both",
       symptoms: ["System is 15+ years old", "Repairs keep adding up", "Uneven temperatures"],
     },
     {
       slug: "maintenance-tune-ups",
       name: "Maintenance & Tune-Ups",
-      summary: "Spring for the AC, fall for the furnace. Small fixes now mean fewer surprises later.",
+      summary: "A check-up before the season turns. We clean it, test it, and catch the small stuff before it turns into a no-heat call.",
+      note: { label: "Good timing", text: "Spring for the AC, fall for the furnace." },
       climate: "both",
       symptoms: ["Seasonal check-up", "Higher energy bills", "Haven't had it looked at in a year"],
     },

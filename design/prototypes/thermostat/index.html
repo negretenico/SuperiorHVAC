@@ -242,6 +242,27 @@ p { margin: 0; }
 .dial-ends .warm { color: var(--ember); }
 .dial-ends .cool { color: var(--ice); }
 
+/* ---------- family-run badges (borrowed from Neighborhood) ---------- */
+.badges { list-style: none; margin: 24px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.badge {
+  display: inline-flex; align-items: center; min-height: 36px; padding: 8px 14px;
+  font-size: var(--step--1); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; line-height: 1;
+  color: var(--fg); border: 1px solid var(--line-strong); border-radius: 999px;
+  transform: rotate(var(--r, 0deg));
+}
+.badge-ember { background: var(--ember-tint); border-color: var(--ember); }
+.badge-ice { background: var(--ice-tint); border-color: var(--ice); }
+.badge-plain { background: var(--surface); }
+@media (prefers-reduced-motion: no-preference) {
+  .badge { animation: settle .6s cubic-bezier(.2,.9,.25,1) var(--d, 0s) both; }
+}
+@keyframes settle {
+  0% { transform: translateY(-8px) rotate(calc(var(--r, 0deg) * -2)) scale(.85); }
+  60% { transform: rotate(calc(var(--r, 0deg) * 1.3)) scale(1.04); }
+  100% { transform: rotate(var(--r, 0deg)) scale(1); }
+}
+.team-aside { margin-top: 12px; font-family: var(--font-display); font-style: italic; font-size: var(--step-1); color: var(--fg-2); font-variation-settings: "SOFT" 100, "WONK" 1; }
+
 /* ---------- services: the spectrum ---------- */
 .services { padding-block: 40px 56px; }
 .section-head h2 { font-size: var(--step-3); line-height: 1.05; margin-top: 18px; max-width: 16ch; font-variation-settings: "SOFT" 30; }
@@ -267,6 +288,8 @@ p { margin: 0; }
 .stop-side { display: flex; align-items: center; gap: 10px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c); }
 .stop h3 { font-size: var(--step-2); line-height: 1.12; margin-top: 8px; font-variation-settings: "SOFT" 20; }
 .stop p { margin-top: 10px; color: var(--fg-2); max-width: 30rem; }
+.stop p.stop-note { margin-top: 12px; color: var(--fg); font-size: var(--step--1); line-height: 1.5; }
+.stop-note b { display: block; font-size: 0.6875rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--c); margin-bottom: 2px; }
 .stop-link {
   display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 8px;
   font-weight: 600; text-decoration: none; color: var(--fg);
@@ -414,7 +437,7 @@ textarea:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 <header class="site-header wrap">
   <a class="wordmark" href="#top" aria-label="Superior HVAC, home"><b>Superior</b><span>HVAC</span><i aria-hidden="true"></i></a>
   <div class="header-cta">
-    <a class="header-phone num" href="tel:+14197061724"><small>Call Joey</small>419-706-1724</a>
+    <a class="header-phone num" href="tel:+14197061724"><small>Family-run · Norwalk</small>419-706-1724</a>
     <a class="btn btn-primary" href="#book">Request service</a>
   </div>
 </header>
@@ -430,6 +453,11 @@ textarea:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
         <a class="btn btn-ghost" href="#services">What we fix</a>
       </div>
       <p class="hero-phone">Or call <a class="num" href="tel:+14197061724">419-706-1724</a></p>
+      <ul class="badges" aria-label="About us">
+        <li class="badge badge-ember" style="--r:-3deg; --d:.15s">Family-run</li>
+        <li class="badge badge-plain" style="--r:2deg; --d:.3s">Norwalk-based</li>
+        <li class="badge badge-ice" style="--r:-1.5deg; --d:.45s">We answer the phone</li>
+      </ul>
     </div>
 
     <figure class="dial" aria-label="Thermostat dial holding at 72 degrees" style="margin-block:0">
@@ -469,25 +497,29 @@ textarea:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
       <li class="stop" style="--pos:0">
         <p class="stop-side">Warm side</p>
         <h3>Furnace &amp; Heating Repair</h3>
-        <p>No heat, short cycling, a strange smell when it kicks on. We'll come find out why and get the house warm again.</p>
+        <p>No heat, a strange smell, or a furnace that keeps shutting itself off. We track down what's wrong and get you warm again.</p>
+        <p class="stop-note"><b>Call us if</b>No heat · cold rooms · cycling on and off</p>
         <a class="stop-link" href="#book" data-pick="svc-heat">Book a heating repair <span class="arrow" aria-hidden="true">&rarr;</span></a>
       </li>
       <li class="stop" style="--pos:0.4">
         <p class="stop-side">Both seasons</p>
         <h3>Maintenance &amp; Tune-Ups</h3>
-        <p>Fall for the furnace, spring for the AC. Small fixes now mean fewer surprises on the coldest night.</p>
+        <p>A check-up before the season turns. We clean it, test it, and catch the small stuff before it turns into a no-heat call.</p>
+        <p class="stop-note"><b>Good timing</b>Spring for the AC · fall for the furnace</p>
         <a class="stop-link" href="#book" data-pick="svc-tune">Book a tune-up <span class="arrow" aria-hidden="true">&rarr;</span></a>
       </li>
       <li class="stop" style="--pos:0.6">
         <p class="stop-side">Both seasons</p>
         <h3>HVAC Installation &amp; Replacement</h3>
-        <p>When it's time for new equipment, we size it to your house and put it in right. If a repair still makes more sense, we'll tell you.</p>
+        <p>When it's time for a new system, we size it for your house, put it in clean, and walk you through how it works before we go.</p>
+        <p class="stop-note"><b>Straight answer</b>If a repair still makes more sense than a new unit, we'll tell you.</p>
         <a class="stop-link" href="#book" data-pick="svc-install">Ask about a new system <span class="arrow" aria-hidden="true">&rarr;</span></a>
       </li>
       <li class="stop" style="--pos:1">
         <p class="stop-side">Cool side</p>
         <h3>AC Repair</h3>
-        <p>Warm air from the vents, ice on the lines, or it just won't turn on. We'll get it cooling again.</p>
+        <p>Warm air coming out of the vents, a unit that won't kick on, or water where it shouldn't be. We find the cause and fix that.</p>
+        <p class="stop-note"><b>Call us if</b>Blowing warm · short cycling · ice on the lines</p>
         <a class="stop-link" href="#book" data-pick="svc-ac">Book an AC repair <span class="arrow" aria-hidden="true">&rarr;</span></a>
       </li>
     </ol>
@@ -497,6 +529,7 @@ textarea:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
     <div class="section-head">
       <p class="kicker"><span class="num">02</span> Who shows up</p>
       <h2 id="team-title">Two people. You'll know us both by name.</h2>
+      <p class="team-aside">No call center. No mystery tech. Just us.</p>
     </div>
     <div class="people">
       <article class="person person-joey">

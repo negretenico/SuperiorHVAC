@@ -53,3 +53,6 @@ next-env.d.ts
 
 # e2e env (test keys only, safe to commit)
 !.dev.vars.e2e
+
+# agent worktrees
+.claude/worktrees/
