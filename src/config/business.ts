@@ -25,10 +25,11 @@ export interface Hours {
 }
 
 export interface Address {
-  street: Maybe<string>;
+  /** Optional: omit for a service-area business that doesn't publish an address. */
+  street?: Maybe<string>;
   city: string;
   region: string; // state code, e.g. "OH"
-  postalCode: Maybe<string>;
+  postalCode?: Maybe<string>;
   country: "US";
 }
 
@@ -36,7 +37,7 @@ export interface TeamMember {
   name: string;
   role: string;
   /** One plain-English line in their own voice. */
-  bio: Maybe<string>;
+  bio?: Maybe<string>;
 }
 
 export interface Service {
@@ -85,8 +86,9 @@ export interface Business {
   phoneDisplay: string;
   address: Address;
   /** Approximate business location for JSON-LD geo (home base). */
-  geo: Maybe<{ latitude: number; longitude: number }>;
-  hours: Maybe<Hours[]>;
+  geo?: Maybe<{ latitude: number; longitude: number }>;
+  /** Optional: omitted while the business runs by appointment. */
+  hours?: Maybe<Hours[]>;
   regionLabel: string;
   team: TeamMember[];
   services: Service[];
@@ -94,7 +96,7 @@ export interface Business {
   testimonials: Testimonial[];
   socials: { facebook?: string; google?: Maybe<string> };
   /** Path under /public to a logo; Todo means the typographic wordmark is used. */
-  logo: Maybe<string>;
+  logo?: Maybe<string>;
   foundedYear?: number;
 }
 
@@ -104,23 +106,19 @@ export const business: Business = {
   about:
     "Superior HVAC LLC is a family-owned and operated heating and air conditioning company providing service and installation to keep your space comfortable year-round. Whether you need service for your existing system or a new HVAC installation, we're committed to dependable workmanship, honest communication, and personalized care. As a family business, we take pride in treating our customers like neighbors and delivering reliable comfort you can count on.",
   tagline: "Heating & cooling, family-run in Northwest Ohio.",
-  siteUrl: todo("domain, e.g. https://superiorhvacoh.com"),
+  siteUrl: "https://superiorhvacoh.com",
   email: "superiorhvac90@gmail.com",
   phoneE164: "+14197061724",
   phoneDisplay: "419-706-1724",
   address: {
-    street: todo("street address"),
     city: "Norwalk",
     region: "OH",
-    postalCode: todo("ZIP code"),
     country: "US",
   },
-  geo: todo("lat/long of home base"),
-  hours: todo("business hours"),
   regionLabel: "Northwest Ohio",
   team: [
-    { name: "Joey Ojeda", role: "Owner/Operator", bio: todo("Joey's one-line bio") },
-    { name: "Ramon Negrete", role: "Lead Installer", bio: todo("Ramon's one-line bio") },
+    { name: "Joey Ojeda", role: "Owner/Operator" },
+    { name: "Ramon Negrete", role: "Lead Installer" },
   ],
   services: [
     {
@@ -185,9 +183,7 @@ export const business: Business = {
   testimonials: [],
   socials: {
     facebook: "https://www.facebook.com/profile.php?id=61562683560654",
-    google: todo("Google Business Profile URL"),
   },
-  logo: todo("logo file (SVG preferred)"),
 };
 
 /** Lists every unfilled value as a dotted path. Used by check:launch and dev banners. */
