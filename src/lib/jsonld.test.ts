@@ -29,6 +29,13 @@ describe("businessJsonLd (current config, with todos)", () => {
     });
   });
 
+  it("uses the legal name and the owner's about text as the description", () => {
+    const ld = businessJsonLd() as Record<string, unknown>;
+    expect(ld.legalName).toBe("Superior HVAC LLC");
+    expect(ld.description).toBe(business.about);
+    expect(String(ld.description)).toMatch(/^Superior HVAC LLC is a family-owned and operated/);
+  });
+
   it("never leaks todo() placeholders", () => {
     expect(asJson(ld)).not.toContain("__todo");
   });

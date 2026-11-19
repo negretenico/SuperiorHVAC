@@ -3,6 +3,7 @@
   margin-top: 12px; font-family: var(--font-display); font-style: italic; font-size: var(--step-1);
   color: var(--fg-2); font-variation-settings: "SOFT" 100, "WONK" 1;
 }
+.about { margin-top: 18px; max-width: var(--measure); color: var(--fg); line-height: 1.6; }
 .people { margin-top: 32px; display: grid; gap: 28px; }
 .person { display: grid; grid-template-columns: 112px 1fr; gap: 18px; align-items: start; }
 .ember { --c: var(--ember); --tint: var(--ember-tint); }

@@ -10,12 +10,13 @@ export function Team({ index }: { index: string }) {
     <section className={`${styles.team} wrap`} id="team" aria-labelledby="team-title">
       <div className="section-head">
         <p className="kicker">
-          <span className="num">{index}</span> Who shows up
+          <span className="num">{index}</span> About us
         </p>
         <h2 id="team-title">
           {countWord(n)} {n === 1 ? "person" : "people"}. You&apos;ll know us {n === 2 ? "both" : "all"} by name.
         </h2>
         <p className={styles.aside}>No call center. No mystery tech. Just us.</p>
+        <p className={styles.about}>{business.about}</p>
       </div>
       <div className={styles.people}>
         {business.team.map((m, i) => (

@@ -50,7 +50,7 @@ export function businessJsonLd(b: Business = defaultBusiness): Json {
     "@id": businessId(b),
     name: b.name,
     legalName: b.legalName,
-    description: b.tagline,
+    description: b.about,
     url: `${siteUrl(b)}/`,
     telephone: b.phoneE164,
     email: b.email,

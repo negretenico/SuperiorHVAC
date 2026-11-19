@@ -75,6 +75,8 @@ export interface Business {
   name: string;
   legalName?: string;
   tagline: string;
+  /** The owner's own "about us" paragraph. Shown on the homepage; used as the JSON-LD description. */
+  about: string;
   siteUrl: Maybe<string>;
   email: string;
   /** E.164, e.g. "+14197061724" */
@@ -98,6 +100,9 @@ export interface Business {
 
 export const business: Business = {
   name: "Superior HVAC",
+  legalName: "Superior HVAC LLC",
+  about:
+    "Superior HVAC LLC is a family-owned and operated heating and air conditioning company providing service and installation to keep your space comfortable year-round. Whether you need service for your existing system or a new HVAC installation, we're committed to dependable workmanship, honest communication, and personalized care. As a family business, we take pride in treating our customers like neighbors and delivering reliable comfort you can count on.",
   tagline: "Heating & cooling, family-run in Northwest Ohio.",
   siteUrl: todo("domain, e.g. https://superiorhvacoh.com"),
   email: "superiorhvac90@gmail.com",
