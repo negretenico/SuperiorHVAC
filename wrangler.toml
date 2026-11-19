@@ -3,6 +3,9 @@ name = "superior-hvac"
 main = "worker/index.ts"
 compatibility_date = "2026-11-01"
 
+# Custom domain: Cloudflare creates the DNS record and certificate on deploy.
+routes = [{ pattern = "superiorhvacoh.com", custom_domain = true }]
+
 [assets]
 directory = "./out"
 binding = "ASSETS"
@@ -13,8 +16,7 @@ run_worker_first = ["/api/*"]
 [[d1_databases]]
 binding = "DB"
 database_name = "superior-hvac"
-# Replace after `npx wrangler d1 create superior-hvac` (see README launch checklist).
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "7afbfe83-845b-493d-841a-26856d3954e1"
 migrations_dir = "db/migrations"
 
 # Native Workers rate limiter. Periods are 10 or 60 seconds only.
