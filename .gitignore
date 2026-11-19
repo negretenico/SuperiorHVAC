@@ -56,3 +56,6 @@ next-env.d.ts
 
 # agent worktrees
 .claude/worktrees/
+
+# production secrets staging file (wrangler secret bulk); never commit
+secrets.prod.json
