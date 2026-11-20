@@ -30,6 +30,9 @@ if (process.env.E2E_REBUILD === "1" || !existsSync("out/index.html")) {
   run("npm run build", {
     ...process.env,
     NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? TURNSTILE_TEST_SITE_KEY,
+    // No analytics beacon in test builds: it CORS-fails off the real domain (console errors) and
+    // would count test traffic. Not "": Next drops empty values and .env.production would fill it.
+    NEXT_PUBLIC_CF_ANALYTICS_TOKEN: "off",
   });
 } else {
   console.log("[e2e:prepare] using existing ./out (set E2E_REBUILD=1 to rebuild).");

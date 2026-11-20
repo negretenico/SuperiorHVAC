@@ -6,6 +6,9 @@ describe("analyticsBeacon", () => {
     expect(analyticsBeacon(undefined)).toBeUndefined();
     expect(analyticsBeacon("  ")).toBeUndefined();
   });
+  it('is off when the token is "off" (CI/e2e override of .env.production)', () => {
+    expect(analyticsBeacon("off")).toBeUndefined();
+  });
   it("builds the Cloudflare beacon script props", () => {
     expect(analyticsBeacon("abc123")).toEqual({
       src: "https://static.cloudflareinsights.com/beacon.min.js",

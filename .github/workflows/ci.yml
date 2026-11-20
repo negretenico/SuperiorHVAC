@@ -18,6 +18,9 @@ env:
   WRANGLER_SEND_METRICS: "false"
   # Cloudflare's public always-pass Turnstile TEST site key. The real key is set in Workers Builds.
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
+  # No analytics beacon in CI builds (it CORS-fails on localhost and would count test traffic).
+  # Not "": Next drops empty values and .env.production's real token would fill it.
+  NEXT_PUBLIC_CF_ANALYTICS_TOKEN: "off"
 
 jobs:
   verify:
