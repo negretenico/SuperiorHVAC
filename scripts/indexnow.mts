@@ -4,24 +4,24 @@
  *   npm run indexnow
  * The key is public by design: public/<KEY>.txt proves we own the domain.
  */
-import { existsSync } from "node:fs";
-import { allRoutes } from "../src/lib/routes.ts";
-import { absoluteUrl, siteUrl } from "../src/lib/seo.ts";
+import { existsSync, readFileSync } from "node:fs";
 
 const KEY = "8ad1218d4979a42e825567c74c82697f";
 
-if (!existsSync(`public/${KEY}.txt`)) {
-  console.error(`indexnow ✗ public/${KEY}.txt is missing.`);
+if (!existsSync(`public/${KEY}.txt`) || !existsSync("out/sitemap.xml")) {
+  console.error(`indexnow ✗ needs public/${KEY}.txt and a built out/sitemap.xml (run npm run build).`);
   process.exit(1);
 }
 
-const host = new URL(siteUrl()).host;
-const urlList = allRoutes().map((p) => absoluteUrl(p));
+// Submit exactly what the built (and deployed) sitemap lists.
+const urlList = [...readFileSync("out/sitemap.xml", "utf8").matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/g)].map((m) => m[1]!);
+const origin = new URL(urlList[0]!).origin;
 const res = await fetch("https://api.indexnow.org/indexnow", {
   method: "POST",
   headers: { "Content-Type": "application/json; charset=utf-8" },
-  body: JSON.stringify({ host, key: KEY, keyLocation: `${siteUrl()}/${KEY}.txt`, urlList }),
+  body: JSON.stringify({ host: new URL(origin).host, key: KEY, keyLocation: `${origin}/${KEY}.txt`, urlList }),
 });
+const host = new URL(origin).host;
 
 if (res.ok) {
   console.log(`indexnow ✓ ${res.status}: submitted ${urlList.length} URLs for ${host}.`);
