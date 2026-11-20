@@ -1,0 +1,8 @@
+# Cloudflare Workers static assets: response headers for every page and file.
+# (API responses are built in worker/; this file does not apply to /api/*.)
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
